@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/providers/cart-provider";
@@ -51,11 +52,19 @@ export function SiteHeader() {
         }`}
       >
         <div className="mx-auto flex h-20 w-full max-w-[1600px] items-center justify-between gap-4 px-5 md:px-8 xl:px-16">
-          <Link className="inline-flex h-full flex-col justify-center gap-0.5" href="/">
-            <span className="meta-kicker leading-none">RetailNext</span>
-            <span className="shop-wordmark leading-none tracking-[-0.04em]">
-              Shop
-            </span>
+          <Link
+            aria-label="RetailNext home"
+            className="inline-flex h-full items-center pt-2"
+            href="/"
+          >
+            <Image
+              alt="RetailNext"
+              className="h-auto w-[168px] md:w-[196px]"
+              height={1024}
+              priority
+              src="/retailnext-logo.png"
+              width={1536}
+            />
           </Link>
 
           <button
