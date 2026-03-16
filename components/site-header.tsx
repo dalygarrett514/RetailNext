@@ -52,14 +52,18 @@ export function SiteHeader() {
         }`}
       >
         <div className="mx-auto flex h-20 w-full max-w-[1600px] items-center justify-between gap-4 px-5 md:px-8 xl:px-16">
-          <Link className="brand-lockup inline-flex h-full items-center" href="/">
+          <Link
+            aria-label="RetailNext home"
+            className="brand-lockup inline-flex h-full items-center pt-2"
+            href="/"
+          >
             <Image
-              alt="RetailNext logo"
-              className="h-24 w-auto"
-              height={96}
+              alt="RetailNext"
+              className="h-auto w-[168px] md:w-[196px]"
+              height={1024}
               priority
               src="/retailnext-logo.png?v=20260316"
-              width={96}
+              width={1536}
             />
           </Link>
 
