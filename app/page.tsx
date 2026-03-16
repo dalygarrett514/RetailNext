@@ -26,7 +26,6 @@ export default async function Home({ searchParams }: HomePageProps) {
   return (
     <CatalogExperience
       selectedCategory={selectedCategory}
-      totalProductCount={visibleProducts.length}
       visibleProducts={visibleProducts}
     />
   );

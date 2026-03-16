@@ -29,7 +29,7 @@ export function CartDrawer() {
 
       <aside
         aria-label="Cart drawer"
-        className={`absolute right-0 top-0 flex h-full w-full max-w-[425px] flex-col border-l border-[var(--border)] bg-white px-6 py-6 shadow-[var(--shadow-soft)] transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`absolute right-0 top-0 flex h-full w-full max-w-[425px] flex-col border-l border-[var(--border)] bg-[var(--surface-solid)] px-6 py-6 shadow-[var(--shadow-soft)] transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="mb-8 flex items-start justify-between gap-4">
           <div>
@@ -50,10 +50,10 @@ export function CartDrawer() {
           ) : (
             lineItems.map((line) => (
               <div
-                className="flex items-start gap-4 rounded-[1.5rem] bg-[var(--panel)] p-4"
+                className="surface-card flex items-start gap-4 rounded-[1.5rem] p-4"
                 key={line.lineId}
               >
-                <div className="overflow-hidden rounded-[1.25rem] bg-white">
+                <div className="image-panel overflow-hidden rounded-[1.25rem]">
                   <Image
                     alt={line.product.alt}
                     height={96}

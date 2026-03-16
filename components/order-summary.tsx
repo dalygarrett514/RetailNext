@@ -25,7 +25,7 @@ export function OrderSummary({
       <p className="meta-kicker">Order summary</p>
       <div className="mt-6 space-y-4">
         {items.length === 0 ? (
-          <div className="rounded-[1.5rem] bg-white p-5">
+          <div className="surface-card rounded-[1.5rem] p-5">
             <p className="text-lg">Cart is empty</p>
             <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
               Add a product to see the mock order summary.
@@ -33,9 +33,9 @@ export function OrderSummary({
           </div>
         ) : (
           items.map((item) => (
-            <div className="rounded-[1.5rem] bg-white p-5" key={item.lineId}>
+            <div className="surface-card rounded-[1.5rem] p-5" key={item.lineId}>
               <div className="flex items-start gap-4">
-                <div className="overflow-hidden rounded-[1.15rem] bg-[var(--panel)]">
+                <div className="image-panel overflow-hidden rounded-[1.15rem]">
                   <Image
                     alt={item.name}
                     className="h-20 w-20 object-contain"

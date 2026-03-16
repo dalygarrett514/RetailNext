@@ -1,5 +1,7 @@
 import type { Category, Product } from "@/lib/types";
 
+const imageVersion = "20260316";
+
 export const products: Product[] = [
   {
     id: "prod-essential-tee",
@@ -12,7 +14,8 @@ export const products: Product[] = [
       "A clean everyday tee with a structured drape and a polished finish for the retail demo floor.",
     fit: "Straight relaxed fit",
     material: "Compact cotton jersey",
-    imageSrc: "/products/essential-tee-v2.png",
+    merchandisingTags: ["new-arrivals", "best-sellers"],
+    imageSrc: `/products/essential-tee-v2.png?v=${imageVersion}`,
     alt: "A soft white t-shirt against a light gray studio background.",
   },
   {
@@ -26,7 +29,8 @@ export const products: Product[] = [
       "A statement tee with crisp front artwork and a boxy silhouette designed to feel collectible.",
     fit: "Boxy cropped fit",
     material: "Midweight cotton jersey",
-    imageSrc: "/products/archive-graphic-tee-v2.png",
+    merchandisingTags: ["new-arrivals", "studio-picks"],
+    imageSrc: `/products/archive-graphic-tee-v2.png?v=${imageVersion}`,
     alt: "A washed charcoal graphic t-shirt on a neutral background.",
   },
   {
@@ -40,7 +44,8 @@ export const products: Product[] = [
       "A softer oversized tee built for casual layering, with a wide rib collar and slightly dropped shoulder.",
     fit: "Oversized weekend fit",
     material: "Brushed cotton knit",
-    imageSrc: "/products/weekend-box-tee-v2.png",
+    merchandisingTags: ["best-sellers"],
+    imageSrc: `/products/weekend-box-tee-v2.png?v=${imageVersion}`,
     alt: "A pale blue oversized t-shirt against a light gray studio background.",
   },
   {
@@ -54,7 +59,8 @@ export const products: Product[] = [
       "A clean utility trouser with a tapered leg, designed to land between merchandising polish and daily wear.",
     fit: "Tailored straight leg",
     material: "Stretch cotton twill",
-    imageSrc: "/products/tailored-utility-pant-v2.png",
+    merchandisingTags: ["best-sellers", "studio-picks"],
+    imageSrc: `/products/tailored-utility-pant-v2.png?v=${imageVersion}`,
     alt: "A pair of slate utility pants photographed in a clean studio setup.",
   },
   {
@@ -68,7 +74,8 @@ export const products: Product[] = [
       "A refined trouser with soft front pleats and a flexible waistband, built for repeat store-to-office wear.",
     fit: "Relaxed taper",
     material: "Performance suiting blend",
-    imageSrc: "/products/relaxed-travel-pant-v2.png",
+    merchandisingTags: ["new-arrivals"],
+    imageSrc: `/products/relaxed-travel-pant-v2.png?v=${imageVersion}`,
     alt: "A pair of sand pleated trousers on a pale neutral background.",
   },
   {
@@ -82,7 +89,8 @@ export const products: Product[] = [
       "A lighter cargo silhouette with tonal pockets and a clean cuff, tuned for a sport-forward merchandising story.",
     fit: "Easy utility fit",
     material: "Lightweight ripstop",
-    imageSrc: "/products/tech-cargo-pant-v2.png",
+    merchandisingTags: ["best-sellers"],
+    imageSrc: `/products/tech-cargo-pant-v2.png?v=${imageVersion}`,
     alt: "A pair of blue cargo pants presented on a subtle studio background.",
   },
   {
@@ -96,7 +104,8 @@ export const products: Product[] = [
       "A plush crewneck with an easy shoulder and tonal seam detail for a calm, premium casual shelf set.",
     fit: "Relaxed crew fit",
     material: "Loopback fleece",
-    imageSrc: "/products/studio-crewneck.png",
+    merchandisingTags: ["best-sellers", "studio-picks"],
+    imageSrc: `/products/studio-crewneck.png?v=${imageVersion}`,
     alt: "A cream fleece crewneck sweatshirt on a soft gray background.",
   },
   {
@@ -110,7 +119,8 @@ export const products: Product[] = [
       "A versatile midweight layer with a structured collar and neat contrast zipper, built for transitional weather.",
     fit: "Structured athletic fit",
     material: "Double-knit jersey",
-    imageSrc: "/products/fleece-half-zip.png",
+    merchandisingTags: ["new-arrivals"],
+    imageSrc: `/products/fleece-half-zip.png?v=${imageVersion}`,
     alt: "A dark quarter-zip sweatshirt photographed as a product still life.",
   },
   {
@@ -124,7 +134,8 @@ export const products: Product[] = [
       "A premium hoodie with a roomy body and dense rib trim, designed to anchor the softer side of the assortment.",
     fit: "Roomy volume fit",
     material: "Heavy brushed fleece",
-    imageSrc: "/products/zip-hoodie-v2.png",
+    merchandisingTags: ["studio-picks"],
+    imageSrc: `/products/zip-hoodie-v2.png?v=${imageVersion}`,
     alt: "A muted gray hoodie centered on a clean, bright backdrop.",
   },
 ];

@@ -1,4 +1,14 @@
 export type Category = "all" | "t-shirt" | "pants" | "sweatshirt";
+export type ProductFilter =
+  | "all"
+  | "new-arrivals"
+  | "best-sellers"
+  | "studio-picks";
+export type ProductSort =
+  | "featured"
+  | "price-low-to-high"
+  | "price-high-to-low"
+  | "newest";
 
 export interface Product {
   id: string;
@@ -10,6 +20,7 @@ export interface Product {
   shortDescription: string;
   fit: string;
   material: string;
+  merchandisingTags: ProductFilter[];
   imageSrc: string;
   alt: string;
 }

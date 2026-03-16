@@ -47,14 +47,14 @@ export function SiteHeader() {
       <header
         className={`fixed inset-x-0 top-0 z-40 transition-all duration-200 ${
           isScrolled
-            ? "bg-white/80 backdrop-blur-[8px]"
+            ? "border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-[10px]"
             : "bg-transparent"
         }`}
       >
         <div className="mx-auto flex h-20 w-full max-w-[1600px] items-center justify-between gap-4 px-5 md:px-8 xl:px-16">
           <Link
             aria-label="RetailNext home"
-            className="inline-flex h-full items-center pt-2"
+            className="brand-lockup inline-flex h-full items-center pt-2"
             href="/"
           >
             <Image
@@ -62,7 +62,7 @@ export function SiteHeader() {
               className="h-auto w-[168px] md:w-[196px]"
               height={1024}
               priority
-              src="/retailnext-logo.png"
+              src="/retailnext-logo.png?v=20260316"
               width={1536}
             />
           </Link>
@@ -75,7 +75,7 @@ export function SiteHeader() {
           >
             <BagIcon />
             <span className="text-base">Cart</span>
-            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--ink)] px-1.5 text-sm font-semibold text-white">
+            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--accent)] px-1.5 text-sm font-semibold text-[var(--surface-solid)]">
               {itemCount}
             </span>
           </button>

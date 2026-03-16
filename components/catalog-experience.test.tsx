@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { CatalogExperience } from "@/components/catalog-experience";
 import { getProductsByCategory } from "@/lib/products";
@@ -8,7 +9,6 @@ describe("CatalogExperience", () => {
     render(
       <CatalogExperience
         selectedCategory="all"
-        totalProductCount={9}
         visibleProducts={getProductsByCategory("all")}
       />,
     );
@@ -20,7 +20,6 @@ describe("CatalogExperience", () => {
     render(
       <CatalogExperience
         selectedCategory="t-shirt"
-        totalProductCount={3}
         visibleProducts={getProductsByCategory("t-shirt")}
       />,
     );
@@ -29,20 +28,39 @@ describe("CatalogExperience", () => {
     expect(screen.getByRole("heading", { name: "T-shirts" })).toBeInTheDocument();
   });
 
-  it("keeps the grid unchanged when the inert toolbar buttons are clicked", () => {
+  it("filters the grid when a merchandising filter is selected", async () => {
+    const user = userEvent.setup();
+
     render(
       <CatalogExperience
         selectedCategory="all"
-        totalProductCount={9}
         visibleProducts={getProductsByCategory("all")}
       />,
     );
 
-    const beforeCount = screen.getAllByTestId("product-card").length;
+    await user.click(screen.getByTestId("toolbar-filter"));
+    await user.click(screen.getByRole("menuitemradio", { name: "Studio Picks" }));
 
-    fireEvent.click(screen.getByTestId("toolbar-filter"));
-    fireEvent.click(screen.getByTestId("toolbar-sort"));
+    expect(screen.getAllByTestId("product-card")).toHaveLength(4);
+    expect(screen.getByText("4 pieces")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "All products" })).toBeInTheDocument();
+  });
 
-    expect(screen.getAllByTestId("product-card")).toHaveLength(beforeCount);
+  it("sorts the visible products by price", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <CatalogExperience
+        selectedCategory="all"
+        visibleProducts={getProductsByCategory("all")}
+      />,
+    );
+
+    await user.click(screen.getByTestId("toolbar-sort"));
+    await user.click(screen.getByRole("menuitemradio", { name: "Price: High to Low" }));
+
+    const cards = screen.getAllByTestId("product-card");
+    expect(within(cards[0]).getByRole("heading", { name: "Commuter Pleated Trouser" }))
+      .toBeInTheDocument();
   });
 });

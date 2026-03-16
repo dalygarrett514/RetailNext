@@ -1,12 +1,62 @@
 import React from "react";
-import { afterEach, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+
+function createStorageMock(): Storage {
+  const store = new Map<string, string>();
+
+  return {
+    get length() {
+      return store.size;
+    },
+    clear() {
+      store.clear();
+    },
+    getItem(key) {
+      return store.get(key) ?? null;
+    },
+    key(index) {
+      return Array.from(store.keys())[index] ?? null;
+    },
+    removeItem(key) {
+      store.delete(key);
+    },
+    setItem(key, value) {
+      store.set(key, value);
+    },
+  };
+}
+
+const originalLocalStorage = globalThis.window?.localStorage;
+const originalSessionStorage = globalThis.window?.sessionStorage;
+
+beforeAll(() => {
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: createStorageMock(),
+  });
+  Object.defineProperty(window, "sessionStorage", {
+    configurable: true,
+    value: createStorageMock(),
+  });
+});
 
 afterEach(() => {
   cleanup();
   window.localStorage.clear();
   window.sessionStorage.clear();
+});
+
+afterAll(() => {
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: originalLocalStorage,
+  });
+  Object.defineProperty(window, "sessionStorage", {
+    configurable: true,
+    value: originalSessionStorage,
+  });
 });
 
 vi.mock("next/image", () => ({
