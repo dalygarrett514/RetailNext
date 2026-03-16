@@ -35,5 +35,6 @@ The app is intended to feel like a polished online shop experience with:
 
 1. Update the relevant route, component, or data file.
 2. Keep styling and assets consistent with the existing storefront.
-3. Run `npm run test` if behavior changed.
-4. Run `npm run build` before finishing.
+3. Update `README.md` and `AGENTS.md` when new features, flows, or important project behavior are added.
+4. Run `npm run test` if behavior changed.
+5. Run `npm run build` before finishing.
