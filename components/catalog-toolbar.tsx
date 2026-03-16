@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Category } from "@/lib/types";
+import type { Category, ProductFilter, ProductSort } from "@/lib/types";
 
 const categoryTitles: Record<Category, string> = {
   all: "All products",
@@ -10,27 +10,33 @@ const categoryTitles: Record<Category, string> = {
   sweatshirt: "Sweatshirts",
 };
 
-const filterOptions = ["New Arrivals", "Best Sellers", "Studio Picks"] as const;
-const sortOptions = [
-  "Featured",
-  "Price: Low to High",
-  "Price: High to Low",
-  "Newest",
-] as const;
+const filterOptions: Array<{ label: string; value: ProductFilter }> = [
+  { label: "All Products", value: "all" },
+  { label: "New Arrivals", value: "new-arrivals" },
+  { label: "Best Sellers", value: "best-sellers" },
+  { label: "Studio Picks", value: "studio-picks" },
+];
+const sortOptions: Array<{ label: string; value: ProductSort }> = [
+  { label: "Featured", value: "featured" },
+  { label: "Price: Low to High", value: "price-low-to-high" },
+  { label: "Price: High to Low", value: "price-high-to-low" },
+  { label: "Newest", value: "newest" },
+];
 
 function ToolbarSelect({
-  defaultValue,
+  selectedValue,
   label,
   options,
+  onSelect,
   testId,
 }: {
-  defaultValue: string;
+  selectedValue: string;
   label: string;
-  options: readonly string[];
+  options: ReadonlyArray<{ label: string; value: string }>;
+  onSelect: (value: string) => void;
   testId: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(defaultValue);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,7 +80,7 @@ function ToolbarSelect({
       >
         <span>{label}</span>
         <span className="text-[var(--muted)] transition-colors group-hover:text-[var(--ink)]">
-          {selectedValue}
+          {options.find((option) => option.value === selectedValue)?.label}
         </span>
         <span
           aria-hidden="true"
@@ -88,7 +94,7 @@ function ToolbarSelect({
 
       <div
         aria-hidden={!isOpen}
-        className={`absolute right-0 top-[calc(100%+0.75rem)] z-20 min-w-[240px] rounded-[1.5rem] border border-[var(--border)] bg-white p-2 shadow-[var(--shadow-soft)] transition-all duration-200 ${
+        className={`absolute right-0 top-[calc(100%+0.75rem)] z-20 min-w-[240px] rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface-solid)] p-2 shadow-[var(--shadow-soft)] transition-all duration-200 ${
           isOpen
             ? "translate-y-0 opacity-100"
             : "pointer-events-none -translate-y-1 opacity-0"
@@ -96,7 +102,7 @@ function ToolbarSelect({
         role="menu"
       >
         {options.map((option) => {
-          const isSelected = option === selectedValue;
+          const isSelected = option.value === selectedValue;
 
           return (
             <button
@@ -106,15 +112,15 @@ function ToolbarSelect({
                   ? "font-semibold text-[var(--ink)]"
                   : "text-[var(--muted)] hover:bg-[var(--panel)] hover:text-[var(--ink)]"
               }`}
-              key={option}
+              key={option.value}
               onClick={() => {
-                setSelectedValue(option);
+                onSelect(option.value);
                 setIsOpen(false);
               }}
               role="menuitemradio"
               type="button"
             >
-              {option}
+              {option.label}
             </button>
           );
         })}
@@ -125,10 +131,18 @@ function ToolbarSelect({
 
 export function CatalogToolbar({
   resultCount,
+  selectedFilter,
   selectedCategory,
+  selectedSort,
+  onFilterChange,
+  onSortChange,
 }: {
   resultCount: number;
+  selectedFilter: ProductFilter;
   selectedCategory: Category;
+  selectedSort: ProductSort;
+  onFilterChange: (value: ProductFilter) => void;
+  onSortChange: (value: ProductSort) => void;
 }) {
   return (
     <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
@@ -141,15 +155,17 @@ export function CatalogToolbar({
 
       <div className="flex flex-wrap items-center gap-3 text-sm md:text-[0.9375rem]">
         <ToolbarSelect
-          defaultValue="New Arrivals"
+          onSelect={(value) => onFilterChange(value as ProductFilter)}
           label="Filter"
           options={filterOptions}
+          selectedValue={selectedFilter}
           testId="toolbar-filter"
         />
         <ToolbarSelect
-          defaultValue="Featured"
+          onSelect={(value) => onSortChange(value as ProductSort)}
           label="Sort"
           options={sortOptions}
+          selectedValue={selectedSort}
           testId="toolbar-sort"
         />
         <span className="text-[var(--muted)]">{resultCount} pieces</span>

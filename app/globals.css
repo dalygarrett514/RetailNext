@@ -2,15 +2,18 @@
 
 :root {
   --canvas: #ffffff;
-  --twc-primary-4: 60 8% 95.7%;
-  --tw-bg-opacity: 1;
-  --panel: hsl(
-    var(--twc-primary-4) / var(--twc-primary-4-opacity, var(--tw-bg-opacity))
-  );
-  --border: #d9d9d4;
-  --ink: #111111;
-  --muted: #8a8a84;
-  --shadow-soft: 0 24px 60px rgba(17, 17, 17, 0.08);
+  --canvas-strong: #f3efe8;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-solid: #ffffff;
+  --panel: #f5f1eb;
+  --panel-strong: #eadfce;
+  --border: rgba(1, 1, 0, 0.08);
+  --ink: #010100;
+  --muted: #6f604d;
+  --accent: #986d36;
+  --accent-strong: #7f5928;
+  --accent-soft: rgba(152, 109, 54, 0.14);
+  --shadow-soft: 0 28px 70px rgba(1, 1, 0, 0.12);
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
@@ -48,7 +51,7 @@ img {
 }
 
 ::selection {
-  background: rgba(17, 17, 17, 0.1);
+  background: var(--accent-soft);
 }
 
 .font-display {
@@ -61,6 +64,39 @@ img {
 
 .shop-wordmark {
   font-size: 1rem;
+}
+
+.brand-lockup {
+  position: relative;
+  border-radius: 999px;
+  padding: 0.25rem 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.brand-lockup::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 0;
+  pointer-events: none;
+}
+
+.brand-overline {
+  color: var(--accent);
+  letter-spacing: 0.16em !important;
+}
+
+.brand-wordmark {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.06em;
+  color: var(--ink);
+}
+
+.brand-wordmark .brand-wordmark-accent {
+  color: var(--accent);
 }
 
 .product-card-title {
@@ -91,42 +127,47 @@ img {
   gap: 0.5rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: #ffffff;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(1, 1, 0, 0.06);
   padding: 0.75rem 1.1rem;
   color: var(--ink);
   transition:
     background-color 160ms ease,
     border-color 160ms ease,
+    box-shadow 160ms ease,
     transform 160ms ease;
 }
 
 .pill-control:hover {
-  background: var(--panel);
+  background: var(--surface-solid);
+  border-color: rgba(152, 109, 54, 0.28);
+  box-shadow: 0 14px 30px rgba(1, 1, 0, 0.08);
   color: var(--ink);
 }
 
 .primary-pill {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: #ffffff;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fffaf2;
 }
 
 .primary-pill:hover {
-  border-color: var(--border);
-  background: var(--panel);
-  color: var(--ink);
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  color: #fffaf2;
   transform: translateY(-1px);
 }
 
 .add-to-cart-pill:hover {
-  background: var(--panel);
-  color: var(--ink);
+  background: var(--accent-strong);
+  color: #fffaf2;
 }
 
 .meta-kicker {
-  color: var(--muted);
+  color: var(--accent);
   font-size: 0.72rem;
-  letter-spacing: 0px !important;
+  font-weight: 600;
+  letter-spacing: 0.12em !important;
   text-transform: uppercase;
 }
 
@@ -137,7 +178,18 @@ img {
 .surface-panel {
   border-radius: 2rem;
   border: 1px solid var(--border);
-  background: var(--panel);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 241, 235, 0.9));
+  box-shadow: 0 24px 60px rgba(1, 1, 0, 0.08);
+}
+
+.surface-card {
+  border: 0;
+  background: var(--surface-solid);
+  box-shadow: 0 14px 30px rgba(1, 1, 0, 0.05);
+}
+
+.image-panel {
+  background: #ffffff;
 }
 
 @media (min-width: 768px) {

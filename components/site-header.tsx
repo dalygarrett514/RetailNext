@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/providers/cart-provider";
@@ -46,16 +47,20 @@ export function SiteHeader() {
       <header
         className={`fixed inset-x-0 top-0 z-40 transition-all duration-200 ${
           isScrolled
-            ? "bg-white/80 backdrop-blur-[8px]"
+            ? "border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-[10px]"
             : "bg-transparent"
         }`}
       >
         <div className="mx-auto flex h-20 w-full max-w-[1600px] items-center justify-between gap-4 px-5 md:px-8 xl:px-16">
-          <Link className="inline-flex h-full flex-col justify-center gap-0.5" href="/">
-            <span className="meta-kicker leading-none">RetailNext</span>
-            <span className="shop-wordmark leading-none tracking-[-0.04em]">
-              Shop
-            </span>
+          <Link className="brand-lockup inline-flex h-full items-center" href="/">
+            <Image
+              alt="RetailNext logo"
+              className="h-24 w-auto"
+              height={96}
+              priority
+              src="/retailnext-logo.png?v=20260316"
+              width={96}
+            />
           </Link>
 
           <button
@@ -66,7 +71,7 @@ export function SiteHeader() {
           >
             <BagIcon />
             <span className="text-base">Cart</span>
-            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--ink)] px-1.5 text-sm font-semibold text-white">
+            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--accent)] px-1.5 text-sm font-semibold text-[var(--surface-solid)]">
               {itemCount}
             </span>
           </button>

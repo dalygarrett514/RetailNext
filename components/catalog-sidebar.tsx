@@ -27,7 +27,7 @@ export function CatalogSidebar({
           return (
             <Link
               aria-current={isActive ? "page" : undefined}
-              className={`shrink-0 transition-colors ${isActive ? "font-semibold" : "text-[var(--ink)]/90 hover:text-[var(--ink)]"}`}
+              className={`shrink-0 transition-colors ${isActive ? "font-semibold text-[var(--accent)]" : "text-[var(--ink)]/90 hover:text-[var(--accent)]"}`}
               href={href}
               key={category.value}
             >

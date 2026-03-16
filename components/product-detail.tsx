@@ -19,7 +19,7 @@ export function ProductDetail({ product }: { product: Product }) {
       </Link>
 
       <div className="grid gap-10 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)] xl:gap-12">
-        <div className="overflow-hidden rounded-[2.5rem] bg-[var(--panel)] p-8 lg:p-12">
+        <div className="image-panel overflow-hidden rounded-[2.5rem] p-8 lg:p-12">
           <Image
             alt={product.alt}
             className="aspect-square h-auto w-full object-contain"

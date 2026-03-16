@@ -81,7 +81,7 @@ export function CheckoutForm() {
               >
                 <span className="mb-3 block text-base">{field.label}</span>
                 <input
-                  className="w-full rounded-[1.2rem] border border-[var(--border)] px-5 py-4 outline-none transition-colors focus:border-[var(--ink)]"
+                  className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
                   name={field.key}
                   onChange={(event) => updateField(field.key, event.target.value)}
                   required

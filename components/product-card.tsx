@@ -7,7 +7,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group" data-testid="product-card">
       <Link href={`/products/${product.slug}`}>
-        <div className="overflow-hidden rounded-[2rem] bg-[var(--panel)] p-6 transition-transform duration-200 group-hover:-translate-y-1">
+        <div className="image-panel overflow-hidden rounded-[2rem] p-6 transition-transform duration-200 group-hover:-translate-y-1">
           <Image
             alt={product.alt}
             className="aspect-square h-auto w-full object-contain"

@@ -7,6 +7,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "RetailNext Shop",
   description: "A polished demo storefront for the RetailNext interview exercise.",
+  icons: {
+    icon: "/favicon.ico?v=20260316",
+    shortcut: "/favicon.ico?v=20260316",
+  },
 };
 
 export default function RootLayout({
