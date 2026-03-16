@@ -45,4 +45,8 @@ npm run test
 npm run build
 npm run start
 ```
+
+## Test PR
+
+This line exists to validate GitHub PR creation from the local repository.
 # SE-Interview-Starter-App
