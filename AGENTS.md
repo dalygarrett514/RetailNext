@@ -8,6 +8,7 @@ The app is intended to feel like a polished online shop experience with:
 - a product catalog
 - personalized recommendation rails across home, category, and product pages
 - expandable header search with live product suggestions
+- an account button in the header with a dedicated split-screen login page
 - global footer with placeholder links and customer feedback UI
 - cart quantity controls, clear-cart support, and expedited checkout payment choices
 - category filtering and sorting

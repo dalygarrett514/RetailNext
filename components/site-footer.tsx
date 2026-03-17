@@ -68,7 +68,10 @@ export function SiteFooter() {
             <button
               className="pill-control primary-pill px-5 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-60"
               disabled={!trimmedFeedback}
-              onClick={() => setSubmitted(true)}
+              onClick={() => {
+                setSubmitted(true);
+                setFeedback("");
+              }}
               type="button"
             >
               Send feedback
@@ -76,7 +79,7 @@ export function SiteFooter() {
 
             {submitted ? (
               <p className="text-sm text-[var(--muted)]">
-                Thanks. Your feedback has been captured for this demo.
+                Thanks. Your feedback has been received.
               </p>
             ) : null}
           </div>

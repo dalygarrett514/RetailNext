@@ -20,4 +20,17 @@ describe("SiteHeader search", () => {
     expect(await screen.findByText("Essential Tee")).toBeInTheDocument();
     expect(screen.getByText("CORE UNIFORM")).toBeInTheDocument();
   });
+
+  it("renders an icon-only account link in the header actions", () => {
+    render(
+      <CartProvider>
+        <SiteHeader />
+      </CartProvider>,
+    );
+
+    const accountLink = screen.getByRole("link", { name: "Account" });
+
+    expect(accountLink).toHaveAttribute("href", "/account/login");
+    expect(accountLink).not.toHaveTextContent("Account");
+  });
 });

@@ -9,7 +9,6 @@ test("shopper can submit footer feedback", async ({ page }) => {
     .fill("Search felt fast, but I would like even more filter options.");
   await page.getByRole("button", { name: "Send feedback" }).click();
 
-  await expect(
-    page.getByText("Thanks. Your feedback has been captured for this demo."),
-  ).toBeVisible();
+  await expect(page.getByText("Thanks. Your feedback has been received.")).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Feedback" })).toHaveValue("");
 });

@@ -56,6 +56,26 @@ function SearchIcon() {
   );
 }
 
+function AccountIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8 8a2.75 2.75 0 100-5.5A2.75 2.75 0 008 8zm-4.5 5.333a4.5 4.5 0 119 0"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.2"
+      />
+    </svg>
+  );
+}
+
 function normalizeValue(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
@@ -367,6 +387,13 @@ export function SiteHeader() {
 
           <div className="flex items-center justify-end gap-3 self-center">
             <HeaderSearch />
+            <Link
+              aria-label="Account"
+              className="pill-control shrink-0 self-center px-3 py-2"
+              href="/account/login"
+            >
+              <AccountIcon />
+            </Link>
             <button
               aria-label="Open cart"
               className="pill-control shrink-0 self-center px-4 py-2"

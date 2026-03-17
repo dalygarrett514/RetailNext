@@ -55,5 +55,9 @@ describe("CartDrawer", () => {
       expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
       expect(screen.getByText("$0.00")).toBeInTheDocument();
     });
+
+    expect(
+      screen.getByRole("button", { name: "Checkout", hidden: true }),
+    ).toBeDisabled();
   });
 });
