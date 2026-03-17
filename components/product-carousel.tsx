@@ -43,42 +43,21 @@ function ProductCarouselCard({
   );
 }
 
-export function ProductCarousel({
+function ProductCarouselTrack({
   products,
   ariaLabel,
+  cloneCount,
+  loopedProducts,
 }: {
   products: Product[];
   ariaLabel: string;
+  cloneCount: number;
+  loopedProducts: Product[];
 }) {
-  const cloneCount = Math.min(VISIBLE_COUNT, products.length);
-  const loopedProducts = useMemo(() => {
-    if (products.length === 0) {
-      return [];
-    }
-
-    const head = products.slice(0, cloneCount);
-    const tail = products.slice(-cloneCount);
-
-    return [...tail, ...products, ...head];
-  }, [cloneCount, products]);
-
   const [currentIndex, setCurrentIndex] = useState(cloneCount);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [pendingDirection, setPendingDirection] =
     useState<"previous" | "next" | null>(null);
-
-  useEffect(() => {
-    setCurrentIndex(cloneCount);
-    setIsTransitionEnabled(false);
-
-    const frame = window.requestAnimationFrame(() => {
-      setIsTransitionEnabled(true);
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-    };
-  }, [cloneCount, products]);
 
   useEffect(() => {
     if (!pendingDirection) {
@@ -175,5 +154,41 @@ export function ProductCarousel({
         </div>
       </div>
     </div>
+  );
+}
+
+export function ProductCarousel({
+  products,
+  ariaLabel,
+}: {
+  products: Product[];
+  ariaLabel: string;
+}) {
+  const cloneCount = Math.min(VISIBLE_COUNT, products.length);
+  const loopedProducts = useMemo(() => {
+    if (products.length === 0) {
+      return [];
+    }
+
+    const head = products.slice(0, cloneCount);
+    const tail = products.slice(-cloneCount);
+
+    return [...tail, ...products, ...head];
+  }, [cloneCount, products]);
+
+  if (products.length === 0) {
+    return null;
+  }
+
+  const carouselKey = products.map((product) => product.id).join(":");
+
+  return (
+    <ProductCarouselTrack
+      ariaLabel={ariaLabel}
+      cloneCount={cloneCount}
+      key={carouselKey}
+      loopedProducts={loopedProducts}
+      products={products}
+    />
   );
 }
