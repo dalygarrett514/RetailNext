@@ -55,3 +55,22 @@ test("shopper can search, adjust cart quantity, and complete checkout", async ({
   ).toBeVisible();
   await expect(page.getByRole("main").getByText("Subtotal")).toBeVisible();
 });
+
+test("shopper can recover from an empty cart by browsing the full catalog", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Open cart" }).click();
+  const cartDrawer = page.getByRole("complementary", { name: "Cart drawer" });
+  await expect(cartDrawer).toBeVisible();
+  await expect(cartDrawer.getByText("Your cart is empty.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Checkout" })).toBeDisabled();
+
+  await cartDrawer.getByRole("link", { name: "Shop all products" }).click();
+
+  await expect(page).toHaveURL(/\/\?view=catalog$/);
+  await expect(page.getByRole("heading", { name: "All products" })).toBeVisible();
+  await expect(page.getByTestId("product-grid")).toBeVisible();
+  await expect(page.getByTestId("product-card").first()).toBeVisible();
+});
