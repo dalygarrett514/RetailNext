@@ -104,7 +104,10 @@ export default function AccountLoginPage() {
                 />
               </label>
 
-              <button className="w-full rounded-[0.95rem] bg-[var(--accent)] px-5 py-4 text-base font-semibold tracking-[0.18em] text-white transition-colors hover:bg-[var(--accent-strong)]">
+              <button
+                className="w-full rounded-[0.95rem] bg-[var(--accent)] px-5 py-4 text-base font-semibold tracking-[0.18em] text-white transition-colors hover:bg-[var(--accent-strong)]"
+                type="button"
+              >
                 CONTINUE
               </button>
 
