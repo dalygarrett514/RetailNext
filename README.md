@@ -66,4 +66,14 @@ npm run test:e2e
 npm run build
 npm run start
 ```
+
+## CI
+
+GitHub Actions runs the standard storefront checks on every pull request and on pushes to `main`:
+
+- `npm run lint`
+- `npm run test`
+- `npm run test:e2e`
+- `npm run build`
+
 # SE-Interview-Starter-App

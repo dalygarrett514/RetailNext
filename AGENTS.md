@@ -36,9 +36,14 @@ The app is intended to feel like a polished online shop experience with:
 ## Commands
 
 - `npm run dev`: start the local dev server
+- `npm run lint`: run ESLint
 - `npm run build`: create a production build
 - `npm run test`: run the test suite
 - `npm run test:e2e`: run the Playwright end-to-end suite
+
+## CI
+
+- GitHub Actions runs `npm run lint`, `npm run test`, `npm run test:e2e`, and `npm run build` on pull requests and pushes to `main`
 
 ## Feature Workflow
 
