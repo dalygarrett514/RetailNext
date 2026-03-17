@@ -1,6 +1,6 @@
 # RetailNext Storefront
 
-Simple Next.js demo storefront.
+Simple Next.js demo storefront focused on polished product discovery and ecommerce flows.
 
 ## Requirements
 
@@ -37,11 +37,31 @@ Open:
 http://localhost:3000
 ```
 
+## Current Experience
+
+- Discovery-led homepage with a remote-image hero banner
+- Latest arrivals, recently restocked, and trending product sections
+- Dedicated all-products catalog view at `/?view=catalog`
+- Category landing views with discovery spotlights
+- Personalized recommendations including recently viewed, you may also like, and complete the look
+- Expandable header search with live product suggestions and typo forgiveness
+- Global footer with placeholder navigation links and customer feedback capture
+- Cart quantity controls, clear-cart action, and expedited checkout payment options
+- Filterable and sortable product catalog
+- Product detail pages with breadcrumbs and freshness badges, cart drawer, checkout, and order confirmation flow
+
+## Notes
+
+- Product stills are loaded from `public/products/`
+- The homepage also uses remote editorial imagery from `images.lululemon.com`
+- Remote image support is configured in `next.config.ts`
+
 ## Other Scripts
 
 ```bash
 npm run lint
 npm run test
+npm run test:e2e
 npm run build
 npm run start
 ```

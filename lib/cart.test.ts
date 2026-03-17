@@ -19,7 +19,7 @@ const sampleShipping = {
 };
 
 describe("cartReducer", () => {
-  it("adds a new line for each add action", () => {
+  it("increments quantity when the same product is added again", () => {
     const firstAdd = cartReducer(initialCartState, {
       type: "add",
       line: createCartLine(products[0].id),
@@ -29,8 +29,8 @@ describe("cartReducer", () => {
       line: createCartLine(products[0].id),
     });
 
-    expect(secondAdd.lines).toHaveLength(2);
-    expect(secondAdd.lines[0].lineId).not.toBe(secondAdd.lines[1].lineId);
+    expect(secondAdd.lines).toHaveLength(1);
+    expect(secondAdd.lines[0].quantity).toBe(2);
     expect(secondAdd.isOpen).toBe(true);
   });
 
@@ -60,6 +60,7 @@ describe("buildOrderSnapshot", () => {
 
     expect(order.orderId).toMatch(/^RNX-\d{6}$/);
     expect(order.items).toHaveLength(2);
+    expect(order.items[0].quantity).toBe(1);
     expect(order.subtotalCents).toBe(
       products[3].priceCents + products[1].priceCents,
     );

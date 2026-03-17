@@ -7,12 +7,14 @@ import { useCart } from "@/providers/cart-provider";
 
 export function CartDrawer() {
   const {
+    clearCart,
     closeCart,
     isOpen,
     itemCount,
     lineItems,
     removeLine,
     subtotalCents,
+    updateQuantity,
   } = useCart();
 
   return (
@@ -67,10 +69,35 @@ export function CartDrawer() {
                   <p className="meta-kicker">{line.product.collectionLabel}</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <p className="text-lg leading-tight">{line.product.name}</p>
-                    <p className="text-base">{formatCurrency(line.product.priceCents)}</p>
+                    <p className="text-base">
+                      {formatCurrency(line.product.priceCents * line.quantity)}
+                    </p>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 rounded-full border border-[var(--border)] px-2 py-1">
+                      <button
+                        aria-label={`Decrease quantity of ${line.product.name}`}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors hover:bg-[var(--panel)]"
+                        onClick={() => updateQuantity(line.lineId, line.quantity - 1)}
+                        type="button"
+                      >
+                        -
+                      </button>
+                      <span className="min-w-6 text-center text-sm font-medium">
+                        {line.quantity}
+                      </span>
+                      <button
+                        aria-label={`Increase quantity of ${line.product.name}`}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors hover:bg-[var(--panel)]"
+                        onClick={() => updateQuantity(line.lineId, line.quantity + 1)}
+                        type="button"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <button
-                    className="mt-5 text-sm text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+                    className="mt-4 text-sm text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
                     onClick={() => removeLine(line.lineId)}
                     type="button"
                   >
@@ -86,6 +113,16 @@ export function CartDrawer() {
           <div className="mb-6 flex items-center justify-between text-lg">
             <span>Subtotal</span>
             <span>{formatCurrency(subtotalCents)}</span>
+          </div>
+
+          <div className="mb-4">
+            <button
+              className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+              onClick={clearCart}
+              type="button"
+            >
+              Clear cart
+            </button>
           </div>
 
           <Link

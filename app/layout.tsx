@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CartDrawer } from "@/components/cart-drawer";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { CartProvider } from "@/providers/cart-provider";
 import "./globals.css";
@@ -25,6 +26,7 @@ export default function RootLayout({
           <div className="min-h-screen">
             <SiteHeader />
             <main>{children}</main>
+            <SiteFooter />
             <CartDrawer />
           </div>
         </CartProvider>

@@ -36,6 +36,7 @@ export type CartAction =
   | { type: "open" }
   | { type: "close" }
   | { type: "add"; line: CartLine }
+  | { type: "update-quantity"; lineId: string; quantity: number }
   | { type: "remove"; lineId: string }
   | { type: "clear" };
 
@@ -62,6 +63,7 @@ export function createCartLine(productId: Product["id"]): CartLine {
     lineId: createLineId(),
     productId,
     addedAt: new Date().toISOString(),
+    quantity: 1,
   };
 }
 
@@ -84,10 +86,41 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
         isOpen: false,
       };
     case "add":
+      const existingLine = state.lines.find(
+        (line) => line.productId === action.line.productId,
+      );
+
+      if (existingLine) {
+        return {
+          ...state,
+          isOpen: true,
+          lines: state.lines.map((line) =>
+            line.lineId === existingLine.lineId
+              ? { ...line, quantity: line.quantity + action.line.quantity }
+              : line,
+          ),
+        };
+      }
+
       return {
         ...state,
         isOpen: true,
         lines: [...state.lines, action.line],
+      };
+    case "update-quantity":
+      return {
+        ...state,
+        lines: state.lines.flatMap((line) => {
+          if (line.lineId !== action.lineId) {
+            return [line];
+          }
+
+          if (action.quantity <= 0) {
+            return [];
+          }
+
+          return [{ ...line, quantity: action.quantity }];
+        }),
       };
     case "remove":
       return {
@@ -119,7 +152,7 @@ export function resolveCartLines(lines: CartLine[]): CartLineWithProduct[] {
 
 export function calculateSubtotalCents(lines: CartLine[]): number {
   return resolveCartLines(lines).reduce(
-    (subtotal, line) => subtotal + line.product.priceCents,
+    (subtotal, line) => subtotal + line.product.priceCents * line.quantity,
     0,
   );
 }
@@ -146,8 +179,12 @@ export function loadCartLines(): CartLine[] {
       (line) =>
         typeof line.lineId === "string" &&
         typeof line.productId === "string" &&
-        typeof line.addedAt === "string",
-    );
+        typeof line.addedAt === "string" &&
+        (line.quantity === undefined || typeof line.quantity === "number"),
+    ).map((line) => ({
+      ...line,
+      quantity: typeof line.quantity === "number" && line.quantity > 0 ? line.quantity : 1,
+    }));
   } catch {
     return [];
   }
@@ -210,11 +247,12 @@ export function buildOrderSnapshot(
     name: line.product.name,
     collectionLabel: line.product.collectionLabel,
     priceCents: line.product.priceCents,
+    quantity: line.quantity,
     imageSrc: line.product.imageSrc,
   }));
 
   const subtotalCents = items.reduce(
-    (subtotal, item) => subtotal + item.priceCents,
+    (subtotal, item) => subtotal + item.priceCents * item.quantity,
     0,
   );
 

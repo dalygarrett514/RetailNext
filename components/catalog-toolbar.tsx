@@ -147,7 +147,7 @@ export function CatalogToolbar({
   return (
     <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
       <div>
-        <p className="meta-kicker">Showing</p>
+        <p className="meta-kicker">Shop</p>
         <h1 className="spring-drop-title mt-3 tracking-[-0.04em]">
           {categoryTitles[selectedCategory]}
         </h1>
@@ -168,7 +168,7 @@ export function CatalogToolbar({
           selectedValue={selectedSort}
           testId="toolbar-sort"
         />
-        <span className="text-[var(--muted)]">{resultCount} pieces</span>
+        <span className="text-[var(--muted)]">{resultCount} styles</span>
       </div>
     </div>
   );

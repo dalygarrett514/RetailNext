@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CatalogSidebar } from "@/components/catalog-sidebar";
+import { CategoryDiscoveryStrip } from "@/components/category-discovery-strip";
 import { CatalogToolbar } from "@/components/catalog-toolbar";
 import { ProductGrid } from "@/components/product-grid";
+import { RecommendationSection } from "@/components/recommendation-section";
+import { getRecommendedProductsForCategory } from "@/lib/products";
 import type { Category, Product, ProductFilter, ProductSort } from "@/lib/types";
 
 function sortProducts(products: Product[], sort: ProductSort) {
@@ -44,12 +46,21 @@ export function CatalogExperience({
     return sortProducts(matchingProducts, selectedSort);
   }, [selectedFilter, selectedSort, visibleProducts]);
 
+  const recommendedProducts =
+    selectedCategory === "all"
+      ? []
+      : getRecommendedProductsForCategory(selectedCategory);
+
   return (
     <div className="page-shell !pt-[50px]">
-      <div className="grid gap-14 xl:grid-cols-[280px_minmax(0,1fr)] xl:gap-[4.5rem]">
-        <CatalogSidebar selectedCategory={selectedCategory} />
-
+      <div className="space-y-12">
         <section className="space-y-12">
+          {selectedCategory !== "all" ? (
+            <CategoryDiscoveryStrip
+              category={selectedCategory}
+              products={visibleProducts}
+            />
+          ) : null}
           <CatalogToolbar
             onFilterChange={setSelectedFilter}
             onSortChange={setSelectedSort}
@@ -59,6 +70,14 @@ export function CatalogExperience({
             selectedSort={selectedSort}
           />
           <ProductGrid products={filteredProducts} />
+          {selectedCategory !== "all" ? (
+            <RecommendationSection
+              description="You might also like these complementary styles picked to round out your lineup."
+              eyebrow="You May Also Like"
+              products={recommendedProducts}
+              title="More styles worth a look"
+            />
+          ) : null}
         </section>
       </div>
     </div>

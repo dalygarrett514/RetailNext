@@ -13,7 +13,7 @@ describe("CatalogExperience", () => {
       />,
     );
 
-    expect(screen.getAllByTestId("product-card")).toHaveLength(9);
+    expect(within(screen.getByTestId("product-grid")).getAllByTestId("product-card")).toHaveLength(9);
   });
 
   it("renders the filtered category set", () => {
@@ -24,7 +24,7 @@ describe("CatalogExperience", () => {
       />,
     );
 
-    expect(screen.getAllByTestId("product-card")).toHaveLength(3);
+    expect(within(screen.getByTestId("product-grid")).getAllByTestId("product-card")).toHaveLength(3);
     expect(screen.getByRole("heading", { name: "T-shirts" })).toBeInTheDocument();
   });
 
@@ -41,8 +41,8 @@ describe("CatalogExperience", () => {
     await user.click(screen.getByTestId("toolbar-filter"));
     await user.click(screen.getByRole("menuitemradio", { name: "Studio Picks" }));
 
-    expect(screen.getAllByTestId("product-card")).toHaveLength(4);
-    expect(screen.getByText("4 pieces")).toBeInTheDocument();
+    expect(within(screen.getByTestId("product-grid")).getAllByTestId("product-card")).toHaveLength(4);
+    expect(screen.getByText("4 styles")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "All products" })).toBeInTheDocument();
   });
 

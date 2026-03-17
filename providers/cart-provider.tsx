@@ -28,6 +28,7 @@ interface CartContextValue {
   openCart: () => void;
   closeCart: () => void;
   addProduct: (productId: CartLine["productId"]) => void;
+  updateQuantity: (lineId: string, quantity: number) => void;
   removeLine: (lineId: string) => void;
   clearCart: () => void;
 }
@@ -60,6 +61,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     closeCart: () => dispatch({ type: "close" }),
     addProduct: (productId) =>
       dispatch({ type: "add", line: createCartLine(productId) }),
+    updateQuantity: (lineId, quantity) =>
+      dispatch({ type: "update-quantity", lineId, quantity }),
     removeLine: (lineId) => dispatch({ type: "remove", lineId }),
     clearCart: () => dispatch({ type: "clear" }),
   };

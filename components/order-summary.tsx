@@ -7,6 +7,7 @@ type SummaryItem = {
   imageSrc: string;
   name: string;
   priceCents: number;
+  quantity: number;
 };
 
 export function OrderSummary({
@@ -28,7 +29,7 @@ export function OrderSummary({
           <div className="surface-card rounded-[1.5rem] p-5">
             <p className="text-lg">Cart is empty</p>
             <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-              Add a product to see the mock order summary.
+              Add a product to see your order summary.
             </p>
           </div>
         ) : (
@@ -47,10 +48,12 @@ export function OrderSummary({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-4">
                     <p className="text-base leading-tight">{item.name}</p>
-                    <p className="text-base">{formatCurrency(item.priceCents)}</p>
+                    <p className="text-base">
+                      {formatCurrency(item.priceCents * item.quantity)}
+                    </p>
                   </div>
                   <p className="mt-3 text-sm text-[var(--muted)]">
-                    {item.collectionLabel}
+                    {item.collectionLabel} · Qty {item.quantity}
                   </p>
                 </div>
               </div>

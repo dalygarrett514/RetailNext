@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
@@ -24,16 +25,98 @@ const fields: Array<{
   { key: "zipCode", label: "ZIP code" },
 ];
 
+const creditCardFields: ReadonlyArray<{
+  key: "cardNumber" | "nameOnCard" | "expirationDate" | "securityCode";
+  label: string;
+  gridClassName?: string;
+}> = [
+  { key: "cardNumber", label: "Card number", gridClassName: "md:col-span-2" },
+  { key: "nameOnCard", label: "Name on card", gridClassName: "md:col-span-2" },
+  { key: "expirationDate", label: "Expiration date" },
+  { key: "securityCode", label: "Security code" },
+];
+
+const billingFields: ReadonlyArray<{
+  key: keyof CheckoutFormFields;
+  label: string;
+  gridClassName?: string;
+}> = [
+  { key: "fullName", label: "Billing full name", gridClassName: "md:col-span-2" },
+  { key: "address", label: "Billing address", gridClassName: "md:col-span-2" },
+  { key: "city", label: "Billing city" },
+  { key: "state", label: "Billing state" },
+  { key: "zipCode", label: "Billing ZIP code" },
+];
+
+function CreditCardIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-8 w-12"
+      fill="none"
+      viewBox="0 0 48 32"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        fill="#fff"
+        height="24"
+        rx="4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        width="38"
+        x="5"
+        y="4"
+      />
+      <path d="M6 11.5H42" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M12 21H20"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
 export function CheckoutForm() {
   const router = useRouter();
   const { clearCart, lineItems, lines, subtotalCents } = useCart();
   const [form, setForm] = useState(DEFAULT_CHECKOUT_FORM);
+  const [creditCardForm, setCreditCardForm] = useState({
+    cardNumber: "",
+    nameOnCard: "",
+    expirationDate: "",
+    securityCode: "",
+  });
+  const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
+  const [billingForm, setBillingForm] = useState(DEFAULT_CHECKOUT_FORM);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<"shop-pay" | "paypal" | "apple-pay" | "credit-card">("credit-card");
 
   function updateField<K extends keyof CheckoutFormFields>(
     key: K,
     value: CheckoutFormFields[K],
   ) {
     setForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function updateCreditCardField<
+    K extends keyof typeof creditCardForm,
+  >(key: K, value: (typeof creditCardForm)[K]) {
+    setCreditCardForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function updateBillingField<K extends keyof CheckoutFormFields>(
+    key: K,
+    value: CheckoutFormFields[K],
+  ) {
+    setBillingForm((current) => ({
       ...current,
       [key]: value,
     }));
@@ -73,23 +156,180 @@ export function CheckoutForm() {
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_390px]">
         <form className="space-y-10" id="checkout-form" onSubmit={handleSubmit}>
-          <div className="grid gap-6 md:grid-cols-3">
-            {fields.map((field) => (
-              <label
-                className={`block ${field.gridClassName ?? ""}`}
-                key={field.key}
-              >
-                <span className="mb-3 block text-base">{field.label}</span>
-                <input
-                  className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
-                  name={field.key}
-                  onChange={(event) => updateField(field.key, event.target.value)}
-                  required
-                  value={form[field.key]}
-                />
-              </label>
-            ))}
+          <div className="space-y-4">
+            <div>
+              <p className="meta-kicker">Express Checkout</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em]">
+                Choose how you want to pay
+              </h2>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                {
+                  value: "shop-pay",
+                  label: "Shop Pay",
+                  logoSrc:
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Shop_Pay_logo.svg/960px-Shop_Pay_logo.svg.png",
+                },
+                {
+                  value: "paypal",
+                  label: "PayPal",
+                  logoSrc:
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/960px-PayPal.svg.png",
+                },
+                {
+                  value: "apple-pay",
+                  label: "Apple Pay",
+                  logoSrc:
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Apple_Pay_logo.svg/1280px-Apple_Pay_logo.svg.png",
+                },
+                { value: "credit-card", label: "Credit Card", logoSrc: null },
+              ].map((option) => {
+                const isSelected = selectedPaymentMethod === option.value;
+
+                return (
+                  <button
+                    className={`rounded-[1.35rem] border px-5 py-4 text-left transition-colors ${
+                      isSelected
+                        ? "border-[var(--accent)] bg-[var(--accent-soft)]"
+                        : "border-[var(--border)] bg-[var(--surface-solid)] hover:border-[var(--accent)]"
+                    }`}
+                    key={option.value}
+                    onClick={() =>
+                      setSelectedPaymentMethod(
+                        option.value as typeof selectedPaymentMethod,
+                      )
+                    }
+                    type="button"
+                  >
+                    <div className="flex min-h-8 items-center">
+                      {option.logoSrc ? (
+                        <Image
+                          alt={option.label}
+                          className="h-8 w-auto object-contain"
+                          height={32}
+                          src={option.logoSrc}
+                          width={120}
+                        />
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <CreditCardIcon />
+                          <span className="text-base font-medium">{option.label}</span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="mt-2 block text-sm text-[var(--muted)]">
+                      {option.value === "credit-card"
+                        ? "Fill in your shipping details and pay securely with card."
+                        : `Check out faster with ${option.label}.`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {selectedPaymentMethod === "credit-card" ? (
+            <div className="space-y-8">
+              <div className="space-y-5">
+                <label className="flex items-center justify-between gap-4 rounded-[1.35rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4">
+                  <div>
+                    <p className="text-base font-medium">Billing address same as shipping</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">
+                      Use your shipping details for card billing.
+                    </p>
+                  </div>
+                  <button
+                    aria-label="Billing address same as shipping"
+                    aria-pressed={billingSameAsShipping}
+                    className={`relative inline-flex h-7 w-12 shrink-0 rounded-full transition-colors ${
+                      billingSameAsShipping ? "bg-[var(--accent)]" : "bg-[var(--panel-strong)]"
+                    }`}
+                    onClick={() => setBillingSameAsShipping((current) => !current)}
+                    type="button"
+                  >
+                    <span
+                      className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
+                        billingSameAsShipping ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </label>
+              </div>
+
+              <div>
+                <p className="meta-kicker">Billing & Shipping</p>
+                <div className="mt-5 grid gap-6 md:grid-cols-3">
+                  {fields.map((field) => (
+                    <label
+                      className={`block ${field.gridClassName ?? ""}`}
+                      key={field.key}
+                    >
+                      <span className="mb-3 block text-base">{field.label}</span>
+                      <input
+                        className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
+                        name={field.key}
+                        onChange={(event) => updateField(field.key, event.target.value)}
+                        required
+                        value={form[field.key]}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="meta-kicker">Card Information</p>
+                <div className="mt-5 grid gap-6 md:grid-cols-3">
+                  {creditCardFields.map((field) => (
+                    <label
+                      className={`block ${field.gridClassName ?? ""}`}
+                      key={field.key}
+                    >
+                      <span className="mb-3 block text-base">{field.label}</span>
+                      <input
+                        className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
+                        name={field.key}
+                        onChange={(event) =>
+                          updateCreditCardField(field.key, event.target.value)
+                        }
+                        required
+                        value={creditCardForm[field.key]}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {!billingSameAsShipping ? (
+                  <div>
+                    <p className="meta-kicker">Billing Address</p>
+                    <div className="mt-5 grid gap-6 md:grid-cols-3">
+                      {billingFields.map((field) => (
+                        <label
+                          className={`block ${field.gridClassName ?? ""}`}
+                          key={field.key}
+                        >
+                          <span className="mb-3 block text-base">{field.label}</span>
+                          <input
+                            className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
+                            name={`billing-${field.key}`}
+                            onChange={(event) =>
+                              updateBillingField(field.key, event.target.value)
+                            }
+                            required
+                            value={billingForm[field.key]}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </form>
 
         <OrderSummary
@@ -101,6 +341,7 @@ export function CheckoutForm() {
             imageSrc: line.product.imageSrc,
             name: line.product.name,
             priceCents: line.product.priceCents,
+            quantity: line.quantity,
           }))}
           subtotalCents={subtotalCents}
         />

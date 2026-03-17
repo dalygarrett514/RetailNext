@@ -1,4 +1,4 @@
-import type { Category, Product } from "@/lib/types";
+import type { Category, DiscoveryTag, Product } from "@/lib/types";
 
 const imageVersion = "20260316";
 
@@ -15,6 +15,8 @@ export const products: Product[] = [
     fit: "Straight relaxed fit",
     material: "Compact cotton jersey",
     merchandisingTags: ["new-arrivals", "best-sellers"],
+    discoveryTags: ["latest-arrivals", "trending-now"],
+    productBadges: ["just-added", "updated-this-week", "low-stock"],
     imageSrc: `/products/essential-tee-v2.png?v=${imageVersion}`,
     alt: "A soft white t-shirt against a light gray studio background.",
   },
@@ -30,6 +32,8 @@ export const products: Product[] = [
     fit: "Boxy cropped fit",
     material: "Midweight cotton jersey",
     merchandisingTags: ["new-arrivals", "studio-picks"],
+    discoveryTags: ["latest-arrivals"],
+    productBadges: ["just-added", "updated-this-week"],
     imageSrc: `/products/archive-graphic-tee-v2.png?v=${imageVersion}`,
     alt: "A washed charcoal graphic t-shirt on a neutral background.",
   },
@@ -45,6 +49,8 @@ export const products: Product[] = [
     fit: "Oversized weekend fit",
     material: "Brushed cotton knit",
     merchandisingTags: ["best-sellers"],
+    discoveryTags: ["recently-restocked"],
+    productBadges: ["back-in-stock", "low-stock"],
     imageSrc: `/products/weekend-box-tee-v2.png?v=${imageVersion}`,
     alt: "A pale blue oversized t-shirt against a light gray studio background.",
   },
@@ -60,6 +66,8 @@ export const products: Product[] = [
     fit: "Tailored straight leg",
     material: "Stretch cotton twill",
     merchandisingTags: ["best-sellers", "studio-picks"],
+    discoveryTags: ["trending-now"],
+    productBadges: ["updated-this-week"],
     imageSrc: `/products/tailored-utility-pant-v2.png?v=${imageVersion}`,
     alt: "A pair of slate utility pants photographed in a clean studio setup.",
   },
@@ -75,6 +83,8 @@ export const products: Product[] = [
     fit: "Relaxed taper",
     material: "Performance suiting blend",
     merchandisingTags: ["new-arrivals"],
+    discoveryTags: ["latest-arrivals", "recently-restocked"],
+    productBadges: ["just-added", "back-in-stock"],
     imageSrc: `/products/relaxed-travel-pant-v2.png?v=${imageVersion}`,
     alt: "A pair of sand pleated trousers on a pale neutral background.",
   },
@@ -90,6 +100,8 @@ export const products: Product[] = [
     fit: "Easy utility fit",
     material: "Lightweight ripstop",
     merchandisingTags: ["best-sellers"],
+    discoveryTags: ["recently-restocked", "trending-now"],
+    productBadges: ["updated-this-week", "back-in-stock"],
     imageSrc: `/products/tech-cargo-pant-v2.png?v=${imageVersion}`,
     alt: "A pair of blue cargo pants presented on a subtle studio background.",
   },
@@ -105,6 +117,8 @@ export const products: Product[] = [
     fit: "Relaxed crew fit",
     material: "Loopback fleece",
     merchandisingTags: ["best-sellers", "studio-picks"],
+    discoveryTags: ["recently-restocked", "trending-now"],
+    productBadges: ["back-in-stock", "low-stock"],
     imageSrc: `/products/studio-crewneck.png?v=${imageVersion}`,
     alt: "A cream fleece crewneck sweatshirt on a soft gray background.",
   },
@@ -120,6 +134,8 @@ export const products: Product[] = [
     fit: "Structured athletic fit",
     material: "Double-knit jersey",
     merchandisingTags: ["new-arrivals"],
+    discoveryTags: ["latest-arrivals"],
+    productBadges: ["just-added", "updated-this-week"],
     imageSrc: `/products/fleece-half-zip.png?v=${imageVersion}`,
     alt: "A dark quarter-zip sweatshirt photographed as a product still life.",
   },
@@ -135,6 +151,8 @@ export const products: Product[] = [
     fit: "Roomy volume fit",
     material: "Heavy brushed fleece",
     merchandisingTags: ["studio-picks"],
+    discoveryTags: ["trending-now"],
+    productBadges: ["updated-this-week", "low-stock"],
     imageSrc: `/products/zip-hoodie-v2.png?v=${imageVersion}`,
     alt: "A muted gray hoodie centered on a clean, bright backdrop.",
   },
@@ -161,4 +179,39 @@ export function getProductBySlug(slug: string): Product | undefined {
 
 export function getProductById(id: string): Product | undefined {
   return products.find((product) => product.id === id);
+}
+
+export function getProductsByDiscoveryTag(tag: DiscoveryTag): Product[] {
+  return products.filter((product) => product.discoveryTags.includes(tag));
+}
+
+const complementaryCategories: Record<Exclude<Category, "all">, Exclude<Category, "all">[]> = {
+  "t-shirt": ["pants", "sweatshirt"],
+  pants: ["t-shirt", "sweatshirt"],
+  sweatshirt: ["t-shirt", "pants"],
+};
+
+export function getRecommendedProductsForCategory(category: Exclude<Category, "all">): Product[] {
+  return complementaryCategories[category].flatMap((relatedCategory) =>
+    products.filter((product) => product.category === relatedCategory),
+  );
+}
+
+export function getCompleteTheLookProducts(product: Product): Product[] {
+  const preferredCategories = complementaryCategories[product.category];
+
+  return [
+    ...preferredCategories.flatMap((category) =>
+      products.filter((candidate) => candidate.category === category),
+    ),
+    ...products.filter(
+      (candidate) =>
+        candidate.category === product.category && candidate.id !== product.id,
+    ),
+  ].filter((candidate, index, allCandidates) => {
+    return (
+      candidate.id !== product.id &&
+      allCandidates.findIndex((match) => match.id === candidate.id) === index
+    );
+  });
 }

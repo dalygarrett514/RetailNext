@@ -4,6 +4,15 @@ export type ProductFilter =
   | "new-arrivals"
   | "best-sellers"
   | "studio-picks";
+export type DiscoveryTag =
+  | "latest-arrivals"
+  | "recently-restocked"
+  | "trending-now";
+export type ProductBadge =
+  | "just-added"
+  | "updated-this-week"
+  | "low-stock"
+  | "back-in-stock";
 export type ProductSort =
   | "featured"
   | "price-low-to-high"
@@ -21,6 +30,8 @@ export interface Product {
   fit: string;
   material: string;
   merchandisingTags: ProductFilter[];
+  discoveryTags: DiscoveryTag[];
+  productBadges: ProductBadge[];
   imageSrc: string;
   alt: string;
 }
@@ -29,6 +40,7 @@ export interface CartLine {
   lineId: string;
   productId: Product["id"];
   addedAt: string;
+  quantity: number;
 }
 
 export interface CheckoutForm {
@@ -45,6 +57,7 @@ export interface OrderItem {
   name: string;
   collectionLabel: string;
   priceCents: number;
+  quantity: number;
   imageSrc: string;
 }
 
