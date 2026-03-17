@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { merchandisingFilterOptions, productSortOptions } from "@/lib/products";
 import type { Category, ProductFilter, ProductSort } from "@/lib/types";
 
 const categoryTitles: Record<Category, string> = {
@@ -9,19 +10,6 @@ const categoryTitles: Record<Category, string> = {
   pants: "Pants",
   sweatshirt: "Sweatshirts",
 };
-
-const filterOptions: Array<{ label: string; value: ProductFilter }> = [
-  { label: "All Products", value: "all" },
-  { label: "New Arrivals", value: "new-arrivals" },
-  { label: "Best Sellers", value: "best-sellers" },
-  { label: "Studio Picks", value: "studio-picks" },
-];
-const sortOptions: Array<{ label: string; value: ProductSort }> = [
-  { label: "Featured", value: "featured" },
-  { label: "Price: Low to High", value: "price-low-to-high" },
-  { label: "Price: High to Low", value: "price-high-to-low" },
-  { label: "Newest", value: "newest" },
-];
 
 function ToolbarSelect({
   selectedValue,
@@ -157,14 +145,14 @@ export function CatalogToolbar({
         <ToolbarSelect
           onSelect={(value) => onFilterChange(value as ProductFilter)}
           label="Filter"
-          options={filterOptions}
+          options={merchandisingFilterOptions}
           selectedValue={selectedFilter}
           testId="toolbar-filter"
         />
         <ToolbarSelect
           onSelect={(value) => onSortChange(value as ProductSort)}
           label="Sort"
-          options={sortOptions}
+          options={productSortOptions}
           selectedValue={selectedSort}
           testId="toolbar-sort"
         />

@@ -8,6 +8,7 @@ The app is intended to feel like a polished online shop experience with:
 - a product catalog
 - personalized recommendation rails across home, category, and product pages
 - expandable header search with live product suggestions
+- a dedicated search results page with facets and zero-results recovery
 - an account button in the header with a dedicated split-screen login page
 - global footer with placeholder links and customer feedback UI
 - cart quantity controls, clear-cart support, and expedited checkout payment choices
@@ -31,6 +32,7 @@ The app is intended to feel like a polished online shop experience with:
 - The header logo is loaded from `public/retailnext-logo.png`
 - The homepage can use remote editorial imagery when configured in `next.config.ts`
 - The full catalog view is available at `/?view=catalog`
+- Search results are available at `/search?q=...`
 - Styling is primarily controlled through `app/globals.css`
 
 ## Commands

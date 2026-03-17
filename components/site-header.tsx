@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
   useDeferredValue,
@@ -12,9 +12,8 @@ import {
   useState,
 } from "react";
 import { formatCurrency } from "@/lib/format";
-import { categoryLinks, products } from "@/lib/products";
+import { categoryLinks, searchProducts } from "@/lib/products";
 import { useCart } from "@/providers/cart-provider";
-import type { Product } from "@/lib/types";
 
 function BagIcon() {
   return (
@@ -76,97 +75,13 @@ function AccountIcon() {
   );
 }
 
-function normalizeValue(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-}
-
-function levenshteinDistance(left: string, right: string) {
-  const rows = left.length + 1;
-  const cols = right.length + 1;
-  const matrix = Array.from({ length: rows }, () => Array<number>(cols).fill(0));
-
-  for (let row = 0; row < rows; row += 1) {
-    matrix[row][0] = row;
-  }
-
-  for (let col = 0; col < cols; col += 1) {
-    matrix[0][col] = col;
-  }
-
-  for (let row = 1; row < rows; row += 1) {
-    for (let col = 1; col < cols; col += 1) {
-      const cost = left[row - 1] === right[col - 1] ? 0 : 1;
-      matrix[row][col] = Math.min(
-        matrix[row - 1][col] + 1,
-        matrix[row][col - 1] + 1,
-        matrix[row - 1][col - 1] + cost,
-      );
-    }
-  }
-
-  return matrix[left.length][right.length];
-}
-
-function isSubsequence(query: string, target: string) {
-  let queryIndex = 0;
-
-  for (const character of target) {
-    if (character === query[queryIndex]) {
-      queryIndex += 1;
-    }
-  }
-
-  return queryIndex === query.length;
-}
-
-function scoreProduct(query: string, product: Product) {
-  const normalizedQuery = normalizeValue(query);
-
-  if (!normalizedQuery) {
-    return Number.NEGATIVE_INFINITY;
-  }
-
-  const haystacks = [
-    normalizeValue(product.name),
-    normalizeValue(product.collectionLabel),
-    normalizeValue(product.category),
-  ];
-
-  let bestScore = Number.NEGATIVE_INFINITY;
-
-  for (const haystack of haystacks) {
-    if (haystack.includes(normalizedQuery)) {
-      bestScore = Math.max(bestScore, 120 - haystack.indexOf(normalizedQuery));
-      continue;
-    }
-
-    const haystackWords = haystack.split(" ");
-    const queryWords = normalizedQuery.split(" ");
-
-    for (const queryWord of queryWords) {
-      for (const haystackWord of haystackWords) {
-        if (haystackWord.startsWith(queryWord)) {
-          bestScore = Math.max(bestScore, 90 - Math.abs(haystackWord.length - queryWord.length));
-        } else if (levenshteinDistance(queryWord, haystackWord) <= 2) {
-          bestScore = Math.max(bestScore, 70 - levenshteinDistance(queryWord, haystackWord) * 10);
-        }
-      }
-    }
-
-    if (isSubsequence(normalizedQuery.replaceAll(" ", ""), haystack.replaceAll(" ", ""))) {
-      bestScore = Math.max(bestScore, 45);
-    }
-  }
-
-  return bestScore;
-}
-
 function HeaderSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!isOpen) {
@@ -197,22 +112,21 @@ function HeaderSearch() {
   }, [isOpen]);
 
   const results = useMemo(() => {
-    const normalizedQuery = normalizeValue(deferredQuery);
+    return searchProducts(deferredQuery).slice(0, 5);
+  }, [deferredQuery]);
 
-    if (!normalizedQuery) {
-      return [];
+  const searchHref = `/search?q=${encodeURIComponent(query.trim())}`;
+
+  const runSearch = () => {
+    const nextQuery = query.trim();
+
+    if (!nextQuery) {
+      return;
     }
 
-    return products
-      .map((product) => ({
-        product,
-        score: scoreProduct(normalizedQuery, product),
-      }))
-      .filter((entry) => entry.score > Number.NEGATIVE_INFINITY)
-      .sort((left, right) => right.score - left.score)
-      .slice(0, 5)
-      .map((entry) => entry.product);
-  }, [deferredQuery]);
+    setIsOpen(false);
+    router.push(`/search?q=${encodeURIComponent(nextQuery)}`);
+  };
 
   return (
     <div className="relative self-center" ref={containerRef}>
@@ -243,6 +157,12 @@ function HeaderSearch() {
             isOpen ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
           onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              runSearch();
+            }
+          }}
           placeholder="Search products"
           ref={inputRef}
           value={query}
@@ -291,10 +211,25 @@ function HeaderSearch() {
                   </span>
                 </Link>
               ))}
+              <Link
+                className="mt-2 flex items-center justify-between rounded-[1rem] border border-[var(--border)] px-3 py-3 text-sm font-semibold tracking-[-0.01em] text-[var(--ink)] transition-colors hover:bg-[var(--panel)]"
+                href={searchHref}
+                onClick={() => setIsOpen(false)}
+              >
+                <span>See all results for “{query.trim()}”</span>
+                <span aria-hidden="true" className="text-[var(--muted)]">
+                  →
+                </span>
+              </Link>
             </div>
           ) : (
-            <div className="px-3 py-4 text-sm text-[var(--muted)]">
-              No close matches yet. Try a product name, category, or collection.
+            <div className="space-y-3 px-3 py-4">
+              <p className="text-sm text-[var(--muted)]">
+                No close matches yet. Try a product name, category, or collection.
+              </p>
+              <Link className="pill-control px-4 py-2 text-sm" href={searchHref} onClick={() => setIsOpen(false)}>
+                Search for “{query.trim()}”
+              </Link>
             </div>
           )}
         </div>

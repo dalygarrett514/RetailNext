@@ -5,24 +5,8 @@ import { CategoryDiscoveryStrip } from "@/components/category-discovery-strip";
 import { CatalogToolbar } from "@/components/catalog-toolbar";
 import { ProductGrid } from "@/components/product-grid";
 import { RecommendationSection } from "@/components/recommendation-section";
-import { getRecommendedProductsForCategory } from "@/lib/products";
+import { getRecommendedProductsForCategory, sortProducts } from "@/lib/products";
 import type { Category, Product, ProductFilter, ProductSort } from "@/lib/types";
-
-function sortProducts(products: Product[], sort: ProductSort) {
-  const nextProducts = [...products];
-
-  switch (sort) {
-    case "price-low-to-high":
-      return nextProducts.sort((left, right) => left.priceCents - right.priceCents);
-    case "price-high-to-low":
-      return nextProducts.sort((left, right) => right.priceCents - left.priceCents);
-    case "newest":
-      return nextProducts.reverse();
-    case "featured":
-    default:
-      return nextProducts;
-  }
-}
 
 export function CatalogExperience({
   selectedCategory,

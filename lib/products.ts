@@ -1,4 +1,11 @@
-import type { Category, DiscoveryTag, Product } from "@/lib/types";
+import type {
+  Category,
+  DiscoveryTag,
+  Product,
+  ProductBadge,
+  ProductFilter,
+  ProductSort,
+} from "@/lib/types";
 
 const imageVersion = "20260316";
 
@@ -164,6 +171,212 @@ export const categoryLinks: Array<{ value: Category; label: string }> = [
   { value: "pants", label: "Pants" },
   { value: "sweatshirt", label: "Sweatshirts" },
 ];
+
+export const merchandisingFilterOptions: Array<{
+  label: string;
+  value: ProductFilter;
+}> = [
+  { label: "All Products", value: "all" },
+  { label: "New Arrivals", value: "new-arrivals" },
+  { label: "Best Sellers", value: "best-sellers" },
+  { label: "Studio Picks", value: "studio-picks" },
+];
+
+export const productSortOptions: Array<{ label: string; value: ProductSort }> = [
+  { label: "Featured", value: "featured" },
+  { label: "Price: Low to High", value: "price-low-to-high" },
+  { label: "Price: High to Low", value: "price-high-to-low" },
+  { label: "Newest", value: "newest" },
+];
+
+export const productBadgeLabels: Record<ProductBadge, string> = {
+  "just-added": "Just Added",
+  "updated-this-week": "Updated This Week",
+  "low-stock": "Low Stock",
+  "back-in-stock": "Back in Stock",
+};
+
+export function normalizeSearchValue(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function levenshteinDistance(left: string, right: string) {
+  const rows = left.length + 1;
+  const cols = right.length + 1;
+  const matrix = Array.from({ length: rows }, () => Array<number>(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    matrix[row][0] = row;
+  }
+
+  for (let col = 0; col < cols; col += 1) {
+    matrix[0][col] = col;
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      const cost = left[row - 1] === right[col - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost,
+      );
+    }
+  }
+
+  return matrix[left.length][right.length];
+}
+
+function isSubsequence(query: string, target: string) {
+  let queryIndex = 0;
+
+  for (const character of target) {
+    if (character === query[queryIndex]) {
+      queryIndex += 1;
+    }
+  }
+
+  return queryIndex === query.length;
+}
+
+export function scoreProduct(query: string, product: Product) {
+  const normalizedQuery = normalizeSearchValue(query);
+
+  if (!normalizedQuery) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  const primaryHaystacks = [
+    normalizeSearchValue(product.name),
+    normalizeSearchValue(product.collectionLabel),
+    normalizeSearchValue(product.category),
+  ];
+  const supportiveHaystacks = [
+    normalizeSearchValue(product.shortDescription),
+    normalizeSearchValue(product.fit),
+    normalizeSearchValue(product.material),
+  ];
+
+  let bestScore = Number.NEGATIVE_INFINITY;
+
+  for (const haystack of primaryHaystacks) {
+    if (haystack.includes(normalizedQuery)) {
+      bestScore = Math.max(bestScore, 120 - haystack.indexOf(normalizedQuery));
+      continue;
+    }
+
+    const haystackWords = haystack.split(" ");
+    const queryWords = normalizedQuery.split(" ");
+
+    for (const queryWord of queryWords) {
+      for (const haystackWord of haystackWords) {
+        if (haystackWord.startsWith(queryWord)) {
+          bestScore = Math.max(bestScore, 90 - Math.abs(haystackWord.length - queryWord.length));
+        } else if (queryWord.length >= 4) {
+          const distance = levenshteinDistance(queryWord, haystackWord);
+
+          if (distance <= 2) {
+            bestScore = Math.max(bestScore, 70 - distance * 10);
+          }
+        }
+      }
+    }
+
+    if (
+      normalizedQuery.replaceAll(" ", "").length >= 4 &&
+      isSubsequence(normalizedQuery.replaceAll(" ", ""), haystack.replaceAll(" ", ""))
+    ) {
+      bestScore = Math.max(bestScore, 45);
+    }
+  }
+
+  for (const haystack of supportiveHaystacks) {
+    if (haystack.includes(normalizedQuery)) {
+      bestScore = Math.max(bestScore, 55 - haystack.indexOf(normalizedQuery));
+      continue;
+    }
+
+    const haystackWords = haystack.split(" ");
+    const queryWords = normalizedQuery.split(" ");
+
+    for (const queryWord of queryWords) {
+      for (const haystackWord of haystackWords) {
+        if (haystackWord.startsWith(queryWord)) {
+          bestScore = Math.max(bestScore, 35 - Math.abs(haystackWord.length - queryWord.length));
+        }
+      }
+    }
+  }
+
+  return bestScore;
+}
+
+export function searchProducts(query: string): Product[] {
+  const normalizedQuery = normalizeSearchValue(query);
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  return products
+    .map((product) => ({
+      product,
+      score: scoreProduct(normalizedQuery, product),
+    }))
+    .filter((entry) => entry.score > Number.NEGATIVE_INFINITY)
+    .sort((left, right) => right.score - left.score)
+    .map((entry) => entry.product);
+}
+
+export function sortProducts(productsToSort: Product[], sort: ProductSort) {
+  const nextProducts = [...productsToSort];
+
+  switch (sort) {
+    case "price-low-to-high":
+      return nextProducts.sort((left, right) => left.priceCents - right.priceCents);
+    case "price-high-to-low":
+      return nextProducts.sort((left, right) => right.priceCents - left.priceCents);
+    case "newest":
+      return nextProducts.reverse();
+    case "featured":
+    default:
+      return nextProducts;
+  }
+}
+
+export function getSearchRecoverySuggestions(query: string): string[] {
+  const normalizedQuery = normalizeSearchValue(query);
+  const suggestedTerms = new Set<string>();
+
+  for (const product of products) {
+    for (const candidate of [
+      product.name,
+      product.collectionLabel,
+      categoryLinks.find((category) => category.value === product.category)?.label ?? product.category,
+    ]) {
+      const normalizedCandidate = normalizeSearchValue(candidate);
+
+      if (
+        normalizedQuery &&
+        (normalizedCandidate.includes(normalizedQuery) ||
+          normalizedQuery.includes(normalizedCandidate) ||
+          normalizedCandidate
+            .split(" ")
+            .some((word) => word.startsWith(normalizedQuery.slice(0, Math.min(4, normalizedQuery.length)))))
+      ) {
+        suggestedTerms.add(candidate);
+      }
+    }
+  }
+
+  if (suggestedTerms.size === 0) {
+    suggestedTerms.add("Best sellers");
+    suggestedTerms.add("T-shirts");
+    suggestedTerms.add("CORE UNIFORM");
+  }
+
+  return Array.from(suggestedTerms).slice(0, 3);
+}
 
 export function getProductsByCategory(category: Category): Product[] {
   if (category === "all") {

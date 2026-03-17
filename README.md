@@ -44,7 +44,9 @@ http://localhost:3000
 - Dedicated all-products catalog view at `/?view=catalog`
 - Category landing views with discovery spotlights
 - Personalized recommendations including recently viewed, you may also like, and complete the look
-- Expandable header search with live product suggestions and typo forgiveness
+- Expandable header search with live product suggestions, typo forgiveness, and a dedicated `/search` results page
+- Search results facets for category, merchandising tags, and freshness badges
+- Zero-results recovery with suggested follow-up searches, facet reset actions, and trending-product fallback rails
 - Header account button with a dedicated split-screen login page
 - Global footer with placeholder navigation links and customer feedback capture
 - Cart quantity controls, clear-cart action, and expedited checkout payment options
