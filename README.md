@@ -53,7 +53,7 @@ http://localhost:3000
 ## Notes
 
 - Product stills are loaded from `public/products/`
-- The homepage also uses remote editorial imagery from `images.lululemon.com`
+- The homepage also uses remote editorial imagery from a configured external image host
 - Remote image support is configured in `next.config.ts`
 
 ## Other Scripts

@@ -47,3 +47,4 @@ The app is intended to feel like a polished online shop experience with:
 4. Run `npm run test` if behavior changed.
 5. Run `npm run test:e2e` when end-to-end flows change.
 6. Run `npm run build` before finishing.
+7. Tag Codex for code review on every pull request.
