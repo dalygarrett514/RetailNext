@@ -48,6 +48,13 @@ export function CartDrawer() {
           {lineItems.length === 0 ? (
             <div className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--panel)]/45 p-6">
               <p className="text-lg">Your cart is empty.</p>
+              <Link
+                className="pill-control primary-pill mt-5 inline-flex"
+                href="/?view=catalog"
+                onClick={closeCart}
+              >
+                Shop all products
+              </Link>
             </div>
           ) : (
             lineItems.map((line) => (

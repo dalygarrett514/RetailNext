@@ -52,9 +52,16 @@ describe("CartDrawer", () => {
     await user.click(screen.getByRole("button", { name: "Clear cart" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
       expect(screen.getByText("$0.00")).toBeInTheDocument();
     });
+
+    await user.click(screen.getByRole("button", { name: "Open cart" }));
+
+    expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Shop all products" })).toHaveAttribute(
+      "href",
+      "/?view=catalog",
+    );
 
     expect(
       screen.getByRole("button", { name: "Checkout", hidden: true }),
