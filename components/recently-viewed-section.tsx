@@ -4,8 +4,13 @@ import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { ProductCarousel } from "@/components/product-carousel";
 import { categoryLinks } from "@/lib/products";
-import { loadRecentlyViewedProducts } from "@/lib/recently-viewed";
+import {
+  getRecentlyViewedProductsSnapshot,
+  subscribeToRecentlyViewed,
+} from "@/lib/recently-viewed";
 import type { Category, Product } from "@/lib/types";
+
+const EMPTY_PRODUCTS: Product[] = [];
 
 function getSuggestedCategories(products: Product[]): Exclude<Category, "all">[] {
   const seen = new Set<Exclude<Category, "all">>();
@@ -22,20 +27,11 @@ function getSuggestedCategories(products: Product[]): Exclude<Category, "all">[]
 
   return categories.slice(0, 3);
 }
-
-function subscribeToRecentlyViewed(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-  };
-}
-
 export function RecentlyViewedSection() {
   const products = useSyncExternalStore(
     subscribeToRecentlyViewed,
-    loadRecentlyViewedProducts,
-    () => [] as Product[],
+    getRecentlyViewedProductsSnapshot,
+    () => EMPTY_PRODUCTS,
   );
 
   if (products.length === 0) {
