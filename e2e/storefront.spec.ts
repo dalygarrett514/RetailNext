@@ -74,3 +74,49 @@ test("shopper can recover from an empty cart by browsing the full catalog", asyn
   await expect(page.getByTestId("product-grid")).toBeVisible();
   await expect(page.getByTestId("product-card").first()).toBeVisible();
 });
+
+test("shopper can recover from a zero-result search", async ({ page }) => {
+  await page.goto("/search?q=zzzx");
+
+  await expect(
+    page.getByRole("heading", { name: "No matches for “zzzx” yet" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Try “Best sellers”" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Try “Best sellers”" }).click();
+
+  await expect(page).toHaveURL(/\/search\?q=Best%20sellers$/);
+  await expect(
+    page.getByRole("heading", { name: "Results for “Best sellers”" }),
+  ).toBeVisible();
+  await expect(page.getByText(/styles matched “Best sellers”/)).toBeVisible();
+  await expect(page.getByTestId("product-grid")).toBeVisible();
+});
+
+test("shopper can recover when facet selections remove all search results", async ({
+  page,
+}) => {
+  await page.goto("/search?q=tee");
+
+  await expect(
+    page.getByRole("heading", { name: "Results for “tee”" }),
+  ).toBeVisible();
+  await expect(page.getByTestId("product-grid")).toBeVisible();
+
+  await page.getByLabel("Studio Picks").click();
+  await page.getByLabel("Back in Stock").click();
+
+  await expect(
+    page.getByRole("heading", { name: "The current facets are too narrow" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Clear all facets" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Clear all facets" }).click();
+
+  await expect(page.getByTestId("product-grid")).toBeVisible();
+  await expect(page.getByText(/3 styles matched “tee”/)).toBeVisible();
+});

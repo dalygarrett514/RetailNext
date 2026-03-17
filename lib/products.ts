@@ -250,6 +250,12 @@ export function scoreProduct(query: string, product: Product) {
     normalizeSearchValue(product.name),
     normalizeSearchValue(product.collectionLabel),
     normalizeSearchValue(product.category),
+    ...product.merchandisingTags.map((tag) =>
+      normalizeSearchValue(
+        merchandisingFilterOptions.find((option) => option.value === tag)?.label ?? tag,
+      ),
+    ),
+    ...product.productBadges.map((badge) => normalizeSearchValue(productBadgeLabels[badge])),
   ];
   const supportiveHaystacks = [
     normalizeSearchValue(product.shortDescription),
