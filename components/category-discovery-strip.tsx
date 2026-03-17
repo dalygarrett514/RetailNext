@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { Category, DiscoveryTag, Product } from "@/lib/types";
 
@@ -107,13 +108,24 @@ export function CategoryDiscoveryStrip({
                     className="flex items-center justify-between gap-4 rounded-[1.25rem] bg-[var(--surface-solid)] px-4 py-3 transition-transform duration-200 hover:-translate-y-0.5"
                     href={`/products/${product.slug}`}
                   >
-                    <div>
-                      <p className="text-sm font-semibold tracking-[-0.02em]">
-                        {product.name}
-                      </p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--accent)]">
-                        {product.collectionLabel}
-                      </p>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="image-panel h-16 w-16 shrink-0 overflow-hidden rounded-[1rem] p-2">
+                        <Image
+                          alt={product.alt}
+                          className="h-full w-full object-contain"
+                          height={80}
+                          src={product.imageSrc}
+                          width={80}
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold tracking-[-0.02em]">
+                          {product.name}
+                        </p>
+                        <p className="mt-1 truncate text-xs uppercase tracking-[0.14em] text-[var(--accent)]">
+                          {product.collectionLabel}
+                        </p>
+                      </div>
                     </div>
                     <span className="text-sm text-[var(--muted)]">Shop</span>
                   </Link>
