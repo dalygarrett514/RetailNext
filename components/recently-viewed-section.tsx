@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProductCarousel } from "@/components/product-carousel";
 import { categoryLinks } from "@/lib/products";
 import { loadRecentlyViewedProducts } from "@/lib/recently-viewed";
@@ -24,7 +24,11 @@ function getSuggestedCategories(products: Product[]): Exclude<Category, "all">[]
 }
 
 export function RecentlyViewedSection() {
-  const [products] = useState<Product[]>(() => loadRecentlyViewedProducts());
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    setProducts(loadRecentlyViewedProducts());
+  }, []);
 
   if (products.length === 0) {
     return null;

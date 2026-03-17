@@ -46,6 +46,10 @@ describe("searchProducts", () => {
     expect(searchProducts("core uniform")[0]?.name).toBe("Essential Tee");
     expect(searchProducts("relaxed taper")[0]?.name).toBe("Commuter Pleated Trouser");
   });
+
+  it("matches merchandising-language recovery terms", () => {
+    expect(searchProducts("best sellers").length).toBeGreaterThan(0);
+  });
 });
 
 describe("getSearchRecoverySuggestions", () => {
