@@ -202,159 +202,161 @@ export function SearchResultsExperience({
           </div>
         </section>
 
-        <section className="grid gap-8 xl:grid-cols-[300px_1fr]">
-          <aside className="space-y-6">
-            <div className="surface-panel p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="meta-kicker">Refine Results</p>
-                  <p className="mt-2 text-sm text-[var(--muted)]">
-                    Narrow by category, merchandising story, or freshness signals.
-                  </p>
-                </div>
-                {hasActiveFacets ? (
-                  <button
-                    className="text-sm font-semibold text-[var(--accent)]"
-                    onClick={clearFacets}
-                    type="button"
-                  >
-                    Clear all
-                  </button>
-                ) : null}
-              </div>
-
-              <div className="mt-6 space-y-6">
-                <SearchFacetSection
-                  onToggle={(value) => setSelectedCategories((current) => toggleValue(current, value))}
-                  options={categoryOptions}
-                  selectedValues={selectedCategories}
-                  title="Category"
-                />
-                <SearchFacetSection
-                  onToggle={(value) => setSelectedFilters((current) => toggleValue(current, value))}
-                  options={merchandisingOptions}
-                  selectedValues={selectedFilters}
-                  title="Merchandising"
-                />
-                <SearchFacetSection
-                  onToggle={(value) => setSelectedBadges((current) => toggleValue(current, value))}
-                  options={badgeOptions}
-                  selectedValues={selectedBadges}
-                  title="Status"
-                />
-              </div>
-            </div>
-          </aside>
-
-          <div className="space-y-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-2">
-                <p className="text-sm text-[var(--muted)]">
-                  {filteredResults.length} {filteredResults.length === 1 ? "style" : "styles"}
-                  {query.trim() ? ` matched “${query.trim()}”` : " in the catalog"}
-                </p>
-                {hasActiveFacets ? (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCategories.map((category) =>
-                      renderActiveFacet(
-                        categoryLinks.find((entry) => entry.value === category)?.label ?? category,
-                        () => setSelectedCategories((current) => current.filter((entry) => entry !== category)),
-                      ),
-                    )}
-                    {selectedFilters.map((filterValue) =>
-                      renderActiveFacet(
-                        merchandisingFilterOptions.find((entry) => entry.value === filterValue)?.label ??
-                          filterValue,
-                        () => setSelectedFilters((current) => current.filter((entry) => entry !== filterValue)),
-                      ),
-                    )}
-                    {selectedBadges.map((badgeValue) =>
-                      renderActiveFacet(productBadgeLabels[badgeValue], () =>
-                        setSelectedBadges((current) => current.filter((entry) => entry !== badgeValue)),
-                      ),
-                    )}
+        <section className="space-y-10">
+          <div className="grid gap-8 xl:grid-cols-[300px_1fr]">
+            <aside className="space-y-6">
+              <div className="surface-panel p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="meta-kicker">Refine Results</p>
+                    <p className="mt-2 text-sm text-[var(--muted)]">
+                      Narrow by category, merchandising story, or freshness signals.
+                    </p>
                   </div>
-                ) : null}
-              </div>
-
-              <label className="flex items-center gap-3 text-sm text-[var(--muted)]">
-                <span>Sort</span>
-                <select
-                  aria-label="Sort search results"
-                  className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-[var(--ink)] outline-none"
-                  onChange={(event) => setSelectedSort(event.target.value as ProductSort)}
-                  value={selectedSort}
-                >
-                  {productSortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            {filteredResults.length > 0 ? (
-              <ProductGrid products={filteredResults} />
-            ) : (
-              <div className="surface-panel space-y-6 p-8">
-                <div className="space-y-3">
-                  <p className="meta-kicker">Zero Results Recovery</p>
-                  <h2 className="font-display text-3xl tracking-[-0.05em]">
-                    {baseResults.length === 0
-                      ? `No matches for “${query.trim() || "your search"}” yet`
-                      : "The current facets are too narrow"}
-                  </h2>
-                  <p className="max-w-[42rem] text-sm leading-7 text-[var(--muted)] md:text-base">
-                    {baseResults.length === 0
-                      ? "Try a broader product name, a category term, or a collection label. You can also jump into one of the recovery searches below."
-                      : "Your search found products, but none remain after the selected facets. Clear a few filters to widen the assortment again."}
-                  </p>
-                </div>
-
-                {baseResults.length === 0 ? (
-                  <div className="flex flex-wrap gap-3">
-                    {recoverySuggestions.map((suggestion) => (
-                      <button
-                        className="pill-control px-4 py-2"
-                        key={suggestion}
-                        onClick={() => runSearch(suggestion)}
-                        type="button"
-                      >
-                        Try “{suggestion}”
-                      </button>
-                    ))}
-                    <Link className="pill-control primary-pill px-4 py-2" href="/?view=catalog">
-                      Browse all products
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-3">
-                    <button className="pill-control primary-pill px-4 py-2" onClick={clearFacets} type="button">
-                      Clear all facets
-                    </button>
+                  {hasActiveFacets ? (
                     <button
-                      className="pill-control px-4 py-2"
-                      onClick={() => {
-                        setSelectedBadges([]);
-                        setSelectedFilters([]);
-                      }}
+                      className="text-sm font-semibold text-[var(--accent)]"
+                      onClick={clearFacets}
                       type="button"
                     >
-                      Keep category only
+                      Clear all
                     </button>
-                  </div>
-                )}
-              </div>
-            )}
+                  ) : null}
+                </div>
 
-            <RecommendationSection
-              description="A quick reset into styles that are currently pulling the strongest engagement across the storefront."
-              eyebrow="Need A Reset?"
-              products={trendingProducts}
-              title="Trending picks worth recovering into"
-            />
+                <div className="mt-6 space-y-6">
+                  <SearchFacetSection
+                    onToggle={(value) => setSelectedCategories((current) => toggleValue(current, value))}
+                    options={categoryOptions}
+                    selectedValues={selectedCategories}
+                    title="Category"
+                  />
+                  <SearchFacetSection
+                    onToggle={(value) => setSelectedFilters((current) => toggleValue(current, value))}
+                    options={merchandisingOptions}
+                    selectedValues={selectedFilters}
+                    title="Merchandising"
+                  />
+                  <SearchFacetSection
+                    onToggle={(value) => setSelectedBadges((current) => toggleValue(current, value))}
+                    options={badgeOptions}
+                    selectedValues={selectedBadges}
+                    title="Status"
+                  />
+                </div>
+              </div>
+            </aside>
+
+            <div className="space-y-6">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm text-[var(--muted)]">
+                    {filteredResults.length} {filteredResults.length === 1 ? "style" : "styles"}
+                    {query.trim() ? ` matched “${query.trim()}”` : " in the catalog"}
+                  </p>
+                  {hasActiveFacets ? (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCategories.map((category) =>
+                        renderActiveFacet(
+                          categoryLinks.find((entry) => entry.value === category)?.label ?? category,
+                          () => setSelectedCategories((current) => current.filter((entry) => entry !== category)),
+                        ),
+                      )}
+                      {selectedFilters.map((filterValue) =>
+                        renderActiveFacet(
+                          merchandisingFilterOptions.find((entry) => entry.value === filterValue)?.label ??
+                            filterValue,
+                          () => setSelectedFilters((current) => current.filter((entry) => entry !== filterValue)),
+                        ),
+                      )}
+                      {selectedBadges.map((badgeValue) =>
+                        renderActiveFacet(productBadgeLabels[badgeValue], () =>
+                          setSelectedBadges((current) => current.filter((entry) => entry !== badgeValue)),
+                        ),
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+
+                <label className="flex items-center gap-3 text-sm text-[var(--muted)]">
+                  <span>Sort</span>
+                  <select
+                    aria-label="Sort search results"
+                    className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-[var(--ink)] outline-none"
+                    onChange={(event) => setSelectedSort(event.target.value as ProductSort)}
+                    value={selectedSort}
+                  >
+                    {productSortOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              {filteredResults.length > 0 ? (
+                <ProductGrid products={filteredResults} />
+              ) : (
+                <div className="surface-panel space-y-6 p-8">
+                  <div className="space-y-3">
+                    <p className="meta-kicker">Zero Results Recovery</p>
+                    <h2 className="font-display text-3xl tracking-[-0.05em]">
+                      {baseResults.length === 0
+                        ? `No matches for “${query.trim() || "your search"}” yet`
+                        : "The current facets are too narrow"}
+                    </h2>
+                    <p className="max-w-[42rem] text-sm leading-7 text-[var(--muted)] md:text-base">
+                      {baseResults.length === 0
+                        ? "Try a broader product name, a category term, or a collection label. You can also jump into one of the recovery searches below."
+                        : "Your search found products, but none remain after the selected facets. Clear a few filters to widen the assortment again."}
+                    </p>
+                  </div>
+
+                  {baseResults.length === 0 ? (
+                    <div className="flex flex-wrap gap-3">
+                      {recoverySuggestions.map((suggestion) => (
+                        <button
+                          className="pill-control px-4 py-2"
+                          key={suggestion}
+                          onClick={() => runSearch(suggestion)}
+                          type="button"
+                        >
+                          Try “{suggestion}”
+                        </button>
+                      ))}
+                      <Link className="pill-control primary-pill px-4 py-2" href="/?view=catalog">
+                        Browse all products
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      <button className="pill-control primary-pill px-4 py-2" onClick={clearFacets} type="button">
+                        Clear all facets
+                      </button>
+                      <button
+                        className="pill-control px-4 py-2"
+                        onClick={() => {
+                          setSelectedBadges([]);
+                          setSelectedFilters([]);
+                        }}
+                        type="button"
+                      >
+                        Keep category only
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+
+          <RecommendationSection
+            description="Start fresh with a few versatile favorites that pair easily with the rest of the assortment."
+            eyebrow="Need A Reset?"
+            products={trendingProducts}
+            title="Trending picks worth recovering into"
+          />
         </section>
       </div>
     </div>
