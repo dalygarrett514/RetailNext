@@ -65,17 +65,18 @@ export function SiteFooter() {
           </label>
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-            <button
-              className="pill-control primary-pill px-5 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={!trimmedFeedback}
-              onClick={() => {
-                setSubmitted(true);
-                setFeedback("");
-              }}
-              type="button"
-            >
-              Send feedback
-            </button>
+            {trimmedFeedback ? (
+              <button
+                className="pill-control primary-pill px-5 py-3 text-sm"
+                onClick={() => {
+                  setSubmitted(true);
+                  setFeedback("");
+                }}
+                type="button"
+              >
+                Send feedback
+              </button>
+            ) : null}
 
             {submitted ? (
               <p className="text-sm text-[var(--muted)]">
