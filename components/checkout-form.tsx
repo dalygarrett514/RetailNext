@@ -78,11 +78,74 @@ function CreditCardIcon() {
   );
 }
 
+type CreditCardForm = {
+  cardNumber: string;
+  nameOnCard: string;
+  expirationDate: string;
+  securityCode: string;
+};
+
+type CheckoutErrorState = Partial<Record<keyof CheckoutFormFields, string>>;
+type CreditCardErrorState = Partial<Record<keyof CreditCardForm, string>>;
+
+function isBlank(value: string) {
+  return value.trim().length === 0;
+}
+
+function validateAddressForm(values: CheckoutFormFields, prefix = ""): CheckoutErrorState {
+  const errors: CheckoutErrorState = {};
+
+  if (isBlank(values.fullName)) {
+    errors.fullName = `${prefix}full name is required.`;
+  }
+
+  if (isBlank(values.address)) {
+    errors.address = `${prefix}address is required.`;
+  }
+
+  if (isBlank(values.city)) {
+    errors.city = `${prefix}city is required.`;
+  }
+
+  if (!/^[A-Za-z]{2}$/.test(values.state.trim())) {
+    errors.state = `${prefix}state must be a 2-letter code.`;
+  }
+
+  if (!/^\d{5}(?:-\d{4})?$/.test(values.zipCode.trim())) {
+    errors.zipCode = `${prefix}ZIP code must be valid.`;
+  }
+
+  return errors;
+}
+
+function validateCreditCardForm(values: CreditCardForm): CreditCardErrorState {
+  const errors: CreditCardErrorState = {};
+  const normalizedCardNumber = values.cardNumber.replace(/\s+/g, "");
+
+  if (!/^\d{13,19}$/.test(normalizedCardNumber)) {
+    errors.cardNumber = "Card number must be 13 to 19 digits.";
+  }
+
+  if (isBlank(values.nameOnCard)) {
+    errors.nameOnCard = "Name on card is required.";
+  }
+
+  if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(values.expirationDate.trim())) {
+    errors.expirationDate = "Expiration date must be in MM/YY format.";
+  }
+
+  if (!/^\d{3,4}$/.test(values.securityCode.trim())) {
+    errors.securityCode = "Security code must be 3 or 4 digits.";
+  }
+
+  return errors;
+}
+
 export function CheckoutForm() {
   const router = useRouter();
   const { clearCart, lineItems, lines, subtotalCents } = useCart();
   const [form, setForm] = useState(DEFAULT_CHECKOUT_FORM);
-  const [creditCardForm, setCreditCardForm] = useState({
+  const [creditCardForm, setCreditCardForm] = useState<CreditCardForm>({
     cardNumber: "",
     nameOnCard: "",
     expirationDate: "",
@@ -90,6 +153,9 @@ export function CheckoutForm() {
   });
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
   const [billingForm, setBillingForm] = useState(DEFAULT_CHECKOUT_FORM);
+  const [shippingErrors, setShippingErrors] = useState<CheckoutErrorState>({});
+  const [creditCardErrors, setCreditCardErrors] = useState<CreditCardErrorState>({});
+  const [billingErrors, setBillingErrors] = useState<CheckoutErrorState>({});
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<"shop-pay" | "paypal" | "apple-pay" | "credit-card">("credit-card");
 
@@ -101,6 +167,10 @@ export function CheckoutForm() {
       ...current,
       [key]: value,
     }));
+    setShippingErrors((current) => ({
+      ...current,
+      [key]: undefined,
+    }));
   }
 
   function updateCreditCardField<
@@ -109,6 +179,10 @@ export function CheckoutForm() {
     setCreditCardForm((current) => ({
       ...current,
       [key]: value,
+    }));
+    setCreditCardErrors((current) => ({
+      ...current,
+      [key]: undefined,
     }));
   }
 
@@ -120,6 +194,10 @@ export function CheckoutForm() {
       ...current,
       [key]: value,
     }));
+    setBillingErrors((current) => ({
+      ...current,
+      [key]: undefined,
+    }));
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -127,6 +205,26 @@ export function CheckoutForm() {
 
     if (lines.length === 0) {
       return;
+    }
+
+    if (selectedPaymentMethod === "credit-card") {
+      const nextShippingErrors = validateAddressForm(form);
+      const nextCreditCardErrors = validateCreditCardForm(creditCardForm);
+      const nextBillingErrors = billingSameAsShipping
+        ? {}
+        : validateAddressForm(billingForm, "Billing ");
+
+      setShippingErrors(nextShippingErrors);
+      setCreditCardErrors(nextCreditCardErrors);
+      setBillingErrors(nextBillingErrors);
+
+      if (
+        Object.keys(nextShippingErrors).length > 0 ||
+        Object.keys(nextCreditCardErrors).length > 0 ||
+        Object.keys(nextBillingErrors).length > 0
+      ) {
+        return;
+      }
     }
 
     const order = buildOrderSnapshot(lines, form);
@@ -155,7 +253,21 @@ export function CheckoutForm() {
       </div>
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_390px]">
-        <form className="space-y-10" id="checkout-form" onSubmit={handleSubmit}>
+        {lines.length === 0 ? (
+          <div className="surface-panel flex min-h-[320px] flex-col items-start justify-center p-8 md:p-10">
+            <p className="meta-kicker">Checkout</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">
+              Your cart is empty
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--muted)]">
+              Add something to your cart before heading to checkout.
+            </p>
+            <Link className="pill-control primary-pill mt-6" href="/?view=catalog">
+              Shop all products
+            </Link>
+          </div>
+        ) : (
+        <form className="space-y-10" id="checkout-form" noValidate onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <p className="meta-kicker">Express Checkout</p>
@@ -268,12 +380,21 @@ export function CheckoutForm() {
                     >
                       <span className="mb-3 block text-base">{field.label}</span>
                       <input
-                        className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
+                        aria-invalid={shippingErrors[field.key] ? "true" : "false"}
+                        className={`w-full rounded-[1.2rem] border bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)] ${
+                          shippingErrors[field.key]
+                            ? "border-[var(--danger,#c85b47)]"
+                            : "border-[var(--border)]"
+                        }`}
                         name={field.key}
                         onChange={(event) => updateField(field.key, event.target.value)}
-                        required
                         value={form[field.key]}
                       />
+                      {shippingErrors[field.key] ? (
+                        <span className="mt-2 block text-sm text-[var(--danger,#c85b47)]">
+                          {shippingErrors[field.key]}
+                        </span>
+                      ) : null}
                     </label>
                   ))}
                 </div>
@@ -289,14 +410,23 @@ export function CheckoutForm() {
                     >
                       <span className="mb-3 block text-base">{field.label}</span>
                       <input
-                        className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
+                        aria-invalid={creditCardErrors[field.key] ? "true" : "false"}
+                        className={`w-full rounded-[1.2rem] border bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)] ${
+                          creditCardErrors[field.key]
+                            ? "border-[var(--danger,#c85b47)]"
+                            : "border-[var(--border)]"
+                        }`}
                         name={field.key}
                         onChange={(event) =>
                           updateCreditCardField(field.key, event.target.value)
                         }
-                        required
                         value={creditCardForm[field.key]}
                       />
+                      {creditCardErrors[field.key] ? (
+                        <span className="mt-2 block text-sm text-[var(--danger,#c85b47)]">
+                          {creditCardErrors[field.key]}
+                        </span>
+                      ) : null}
                     </label>
                   ))}
                 </div>
@@ -314,14 +444,23 @@ export function CheckoutForm() {
                         >
                           <span className="mb-3 block text-base">{field.label}</span>
                           <input
-                            className="w-full rounded-[1.2rem] border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)]"
+                            aria-invalid={billingErrors[field.key] ? "true" : "false"}
+                            className={`w-full rounded-[1.2rem] border bg-[var(--surface-solid)] px-5 py-4 outline-none transition-colors focus:border-[var(--accent)] ${
+                              billingErrors[field.key]
+                                ? "border-[var(--danger,#c85b47)]"
+                                : "border-[var(--border)]"
+                            }`}
                             name={`billing-${field.key}`}
                             onChange={(event) =>
                               updateBillingField(field.key, event.target.value)
                             }
-                            required
                             value={billingForm[field.key]}
                           />
+                          {billingErrors[field.key] ? (
+                            <span className="mt-2 block text-sm text-[var(--danger,#c85b47)]">
+                              {billingErrors[field.key]}
+                            </span>
+                          ) : null}
                         </label>
                       ))}
                     </div>
@@ -331,6 +470,7 @@ export function CheckoutForm() {
             </div>
           ) : null}
         </form>
+        )}
 
         <OrderSummary
           checkoutDisabled={lines.length === 0}

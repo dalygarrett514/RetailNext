@@ -46,7 +46,7 @@ export function CartDrawer() {
 
         <div className="flex-1 space-y-5 overflow-y-auto pr-1">
           {lineItems.length === 0 ? (
-            <div className="surface-panel p-6">
+            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--panel)]/45 p-6">
               <p className="text-lg">Your cart is empty.</p>
             </div>
           ) : (
@@ -125,13 +125,23 @@ export function CartDrawer() {
             </button>
           </div>
 
-          <Link
-            className="pill-control primary-pill flex w-full"
-            href="/checkout"
-            onClick={closeCart}
-          >
-            Checkout
-          </Link>
+          {lineItems.length > 0 ? (
+            <Link
+              className="pill-control primary-pill flex w-full"
+              href="/checkout"
+              onClick={closeCart}
+            >
+              Checkout
+            </Link>
+          ) : (
+            <button
+              className="pill-control primary-pill flex w-full cursor-not-allowed opacity-60"
+              disabled
+              type="button"
+            >
+              Checkout
+            </button>
+          )}
         </div>
       </aside>
     </div>

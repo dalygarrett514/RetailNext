@@ -45,6 +45,7 @@ http://localhost:3000
 - Category landing views with discovery spotlights
 - Personalized recommendations including recently viewed, you may also like, and complete the look
 - Expandable header search with live product suggestions and typo forgiveness
+- Header account button with a dedicated split-screen login page
 - Global footer with placeholder navigation links and customer feedback capture
 - Cart quantity controls, clear-cart action, and expedited checkout payment options
 - Filterable and sortable product catalog
