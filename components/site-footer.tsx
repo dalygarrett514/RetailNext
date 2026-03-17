@@ -20,6 +20,7 @@ const footerColumns = [
 export function SiteFooter() {
   const [feedback, setFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const trimmedFeedback = feedback.trim();
 
   return (
     <footer className="mt-20 border-t border-[var(--border)] bg-[var(--panel)]/55">
@@ -65,7 +66,8 @@ export function SiteFooter() {
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
             <button
-              className="pill-control primary-pill px-5 py-3 text-sm"
+              className="pill-control primary-pill px-5 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={!trimmedFeedback}
               onClick={() => setSubmitted(true)}
               type="button"
             >
