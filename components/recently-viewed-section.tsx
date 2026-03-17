@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { ProductCarousel } from "@/components/product-carousel";
 import { categoryLinks } from "@/lib/products";
 import { loadRecentlyViewedProducts } from "@/lib/recently-viewed";
@@ -23,12 +23,20 @@ function getSuggestedCategories(products: Product[]): Exclude<Category, "all">[]
   return categories.slice(0, 3);
 }
 
-export function RecentlyViewedSection() {
-  const [products, setProducts] = useState<Product[]>([]);
+function subscribeToRecentlyViewed(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
 
-  useEffect(() => {
-    setProducts(loadRecentlyViewedProducts());
-  }, []);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+  };
+}
+
+export function RecentlyViewedSection() {
+  const products = useSyncExternalStore(
+    subscribeToRecentlyViewed,
+    loadRecentlyViewedProducts,
+    () => [] as Product[],
+  );
 
   if (products.length === 0) {
     return null;
