@@ -120,3 +120,44 @@ test("shopper can recover when facet selections remove all search results", asyn
   await expect(page.getByTestId("product-grid")).toBeVisible();
   await expect(page.getByText(/3 styles matched “tee”/)).toBeVisible();
 });
+
+test("shopper can navigate with product breadcrumbs", async ({ page }) => {
+  await page.goto("/?category=pants");
+
+  await expect(page).toHaveURL(/\/\?category=pants$/);
+  await expect(page.getByRole("heading", { name: "Pants", exact: true })).toBeVisible();
+
+  await page
+    .getByTestId("product-grid")
+    .getByRole("link", { name: /Tailored Utility Pant/i })
+    .click();
+
+  const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
+  await expect(breadcrumb).toContainText("Home");
+  await expect(breadcrumb).toContainText("Pants");
+  await expect(breadcrumb).toContainText("Tailored Utility Pant");
+
+  await breadcrumb.getByRole("link", { name: "Pants" }).click();
+
+  await expect(page).toHaveURL(/\/\?category=pants$/);
+  await expect(page.getByRole("heading", { name: "Pants", exact: true })).toBeVisible();
+  await expect(page.getByTestId("product-grid")).toBeVisible();
+
+  await page
+    .getByTestId("product-grid")
+    .getByRole("link", { name: /Tailored Utility Pant/i })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Tailored Utility Pant" }),
+  ).toBeVisible();
+
+  await page
+    .getByRole("navigation", { name: "Breadcrumb" })
+    .getByRole("link", { name: "Home" })
+    .click();
+
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("link", { name: "RetailNext home" }),
+  ).toBeVisible();
+});

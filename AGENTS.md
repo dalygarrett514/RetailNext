@@ -26,6 +26,13 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture Wiring
+
+- `app/layout.tsx` defines the global storefront shell and wraps all routes in `CartProvider`.
+- `app/layout.tsx` always renders `SiteHeader`, `SiteFooter`, and `CartDrawer` around route content.
+- Update shared shell behavior and app-wide providers in `app/layout.tsx`.
+- Cart state lives in `providers/cart-provider.tsx` and persists through the helpers in `lib/cart.ts`.
+
 ## Notes
 
 - Product images are loaded from `public/products/`
