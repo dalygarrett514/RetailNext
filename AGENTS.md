@@ -49,6 +49,15 @@ The app is intended to feel like a polished online shop experience with:
 - `lib/recently-viewed.ts`: recently viewed product persistence and retrieval helpers
 - `lib/types.ts`: shared storefront domain types used across routes and components
 
+## State & Data Flow
+
+- `lib/products.ts` is the source of truth for catalog content, merchandising metadata, filters, sorting, and search helpers.
+- `lib/types.ts` defines the shared storefront domain types.
+- `providers/cart-provider.tsx` owns client-side cart state and exposes shared cart actions through `useCart()`.
+- `lib/cart.ts` contains cart business logic and browser persistence, including reducer behavior, subtotal calculation, and order snapshot helpers.
+- `lib/recently-viewed.ts` owns recently viewed browser persistence and resolves stored product IDs back to products, so product IDs in `lib/products.ts` should remain stable.
+- `app/layout.tsx` wires the provider layer; routes and components should consume shared data/helpers instead of introducing duplicate business logic.
+
 ## Notes
 
 - Product images are loaded from `public/products/`

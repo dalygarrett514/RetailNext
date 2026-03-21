@@ -177,3 +177,29 @@ test("recently viewed persists across product visits", async ({ page }) => {
       ]),
     );
 });
+
+test("shopper can open the account page from the header", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("link", { name: "Account" }).click();
+
+  await expect(page).toHaveURL("/account/login");
+  await expect(
+    page.getByRole("heading", { name: "Sign in or create an account" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Email address")).toBeVisible();
+  await expect(page.getByRole("button", { name: "CONTINUE" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "USE A PASSKEY" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Explore what's new" }),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "Back to home" }).click();
+
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("button", { name: "Open search" }),
+  ).toBeVisible();
+});
