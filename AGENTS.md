@@ -26,6 +26,29 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture Map
+
+- `app/layout.tsx`: application shell, global layout, and provider wiring
+- `app/page.tsx`: homepage entry point and catalog-view switch via `?view=catalog`
+- `app/search/page.tsx`: dedicated search results route for `/search?q=...`
+- `app/products/[slug]/page.tsx`: product detail route driven by product slug
+- `app/checkout/page.tsx`: checkout flow entry point
+- `app/order/success/page.tsx`: order confirmation experience
+- `app/account/login/page.tsx`: split-screen account login experience
+- `components/homepage-discovery.tsx`: editorial homepage storytelling and discovery modules
+- `components/catalog-experience.tsx`: catalog browsing, filtering, and sorting experience
+- `components/search-results-experience.tsx`: search results, facets, and zero-results recovery UI
+- `components/product-detail.tsx`: product detail presentation, merchandising, and add-to-cart UI
+- `components/cart-drawer.tsx`: cart drawer interactions, quantity controls, and clear-cart actions
+- `components/checkout-form.tsx`: checkout form and payment UI
+- `components/site-header.tsx`: global navigation, expandable search, and account/cart entry points
+- `components/site-footer.tsx`: global footer links and customer feedback UI
+- `providers/cart-provider.tsx`: shared cart state, mutations, and cart drawer coordination
+- `lib/products.ts`: source of truth for catalog products, category links, badges, filters, and search helpers
+- `lib/cart.ts`: cart calculation and mutation helpers
+- `lib/recently-viewed.ts`: recently viewed product persistence and retrieval helpers
+- `lib/types.ts`: shared storefront domain types used across routes and components
+
 ## Notes
 
 - Product images are loaded from `public/products/`

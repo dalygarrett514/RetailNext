@@ -120,3 +120,60 @@ test("shopper can recover when facet selections remove all search results", asyn
   await expect(page.getByTestId("product-grid")).toBeVisible();
   await expect(page.getByText(/3 styles matched “tee”/)).toBeVisible();
 });
+
+test("recently viewed persists across product visits", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  const visitedProducts = [
+    { name: "Essential Tee", id: "prod-essential-tee" },
+    { name: "Tailored Utility Pant", id: "prod-tailored-utility-pant" },
+    { name: "Soft Fleece Crew", id: "prod-soft-fleece-crew" },
+  ];
+
+  for (const product of visitedProducts) {
+    await page.goto("/?view=catalog");
+    await page.getByRole("link", { name: product.name }).click();
+    await expect(
+      page.getByRole("heading", { name: product.name, exact: true }),
+    ).toBeVisible();
+    await expect
+      .poll(async () => {
+        return page.evaluate(() => window.localStorage.getItem("retailnext:recently-viewed"));
+      })
+      .toContain(product.id);
+  }
+
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("heading", { name: "Pick up where you left off" }),
+  ).toBeVisible();
+  const recentlyViewedRail = page.getByLabel("Recently Viewed", { exact: true });
+  await expect(recentlyViewedRail).toBeVisible();
+
+  for (const product of visitedProducts) {
+    await expect(
+      recentlyViewedRail.getByRole("heading", { name: product.name, exact: true }).first(),
+    ).toBeVisible();
+  }
+
+  await expect(
+    page.getByRole("heading", {
+      name: "Keep exploring categories that match your browsing",
+    }),
+  ).toBeVisible();
+
+  await expect
+    .poll(async () => {
+      return page.evaluate(() => window.localStorage.getItem("retailnext:recently-viewed"));
+    })
+    .toBe(
+      JSON.stringify([
+        "prod-soft-fleece-crew",
+        "prod-tailored-utility-pant",
+        "prod-essential-tee",
+      ]),
+    );
+});
