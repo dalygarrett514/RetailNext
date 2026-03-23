@@ -26,6 +26,17 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture
+
+- `app/layout.tsx` defines the global app shell and wraps all routes with `CartProvider`.
+- Shared chrome is global: `SiteHeader`, `SiteFooter`, and `CartDrawer` are mounted in `app/layout.tsx`.
+- `app/page.tsx` switches between the editorial homepage and catalog mode based on the `view` and `category` query params.
+- Route flows live in `app/search/page.tsx`, `app/products/[slug]/page.tsx`, `app/checkout/page.tsx`, `app/order/success/page.tsx`, and `app/account/login/page.tsx`.
+- `lib/products.ts` is the source of truth for product data, catalog filters, search scoring, and recommendation helpers; shared domain types live in `lib/types.ts`.
+- Cart state is client-side in `providers/cart-provider.tsx`, with reducer and persistence helpers in `lib/cart.ts`.
+- Header search UI lives in `components/site-header.tsx`; matching and ranking logic lives in `lib/products.ts`.
+- Styling is primarily centralized in `app/globals.css`; prefer updating shared tokens and global patterns there before adding one-off styling in individual components.
+
 ## Notes
 
 - Product images are loaded from `public/products/`
