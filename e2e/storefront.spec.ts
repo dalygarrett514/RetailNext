@@ -75,6 +75,27 @@ test("shopper can recover from an empty cart by browsing the full catalog", asyn
   await expect(page.getByTestId("product-card").first()).toBeVisible();
 });
 
+test("shopper can filter the catalog from the toolbar", async ({ page }) => {
+  await page.goto("/?view=catalog");
+
+  await expect(page.getByRole("heading", { name: "All products" })).toBeVisible();
+  await expect(page.getByText("9 styles")).toBeVisible();
+  await expect(page.getByTestId("product-card")).toHaveCount(9);
+
+  await page.getByTestId("toolbar-filter").click();
+  await page.getByRole("menuitemradio", { name: "Studio Picks" }).click();
+
+  await expect(page.getByText("4 styles")).toBeVisible();
+  await expect(page.getByTestId("product-card")).toHaveCount(4);
+  await expect(page.getByRole("heading", { name: "Archive Graphic Tee" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Tailored Utility Pant" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Soft Fleece Crew" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Loft Hoodie" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Essential Tee" })).toHaveCount(0);
+});
+
 test("shopper can recover from a zero-result search", async ({ page }) => {
   await page.goto("/search?q=zzzx");
 

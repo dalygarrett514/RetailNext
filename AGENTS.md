@@ -2,6 +2,14 @@
 
 RetailNext is a simple ecommerce storefront built with Next.js, React, and TypeScript.
 
+## Environment & Setup
+
+- Node.js `20.9+`
+- npm `10+`
+- `npm install`
+- `npm run dev` at `http://localhost:3000`
+- `npm run build` before finishing substantial changes
+
 The app is intended to feel like a polished online shop experience with:
 
 - a discovery-led homepage with editorial product storytelling
