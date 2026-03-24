@@ -26,6 +26,16 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture
+
+- Catalog and merchandising content is defined in `lib/products.ts`; the storefront does not currently fetch product data from an external API or database.
+- The homepage entry point in `app/page.tsx` switches between the editorial discovery experience and the catalog experience based on `view` and `category` search params.
+- Search results are routed through `app/search/page.tsx`, and product detail pages are routed through `app/products/[slug]/page.tsx`.
+- Shared storefront UI is composed from `components/`, while shared types and pure helper functions live in `lib/`.
+- Cart state is managed by `providers/cart-provider.tsx` using a reducer from `lib/cart.ts`, and cart contents persist in browser `localStorage`.
+- Checkout helpers and the order snapshot flow are also implemented in `lib/cart.ts`, including the session-stored confirmation payload used after purchase.
+- Recently viewed products are managed separately in `lib/recently-viewed.ts` and synchronized through browser storage and a custom window event.
+
 ## Notes
 
 - Product images are loaded from `public/products/`
