@@ -26,6 +26,18 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture Notes
+
+- Routing is App Router based: `app/page.tsx` switches between the editorial homepage and catalog view from query params, `app/search/page.tsx` owns search results, and `app/products/[slug]/page.tsx` resolves product detail pages by slug.
+- `app/layout.tsx` is the global shell. It mounts `SiteHeader`, `SiteFooter`, `CartDrawer`, and wraps the app in `CartProvider`, so cart state is available across every route.
+- The product catalog source of truth lives in `lib/products.ts`. Product records, category links, merchandising filters, badge labels, search normalization, and catalog/search helper functions should stay centralized there.
+- Product detail pages resolve records by slug, while cart and recently viewed flows resolve products by `id`. Keep both `id` and `slug` stable when editing catalog data.
+- Cart state is managed client-side in `providers/cart-provider.tsx` with a reducer from `lib/cart.ts`. Persistence uses `localStorage` under `retailnext-cart-lines`, and the order confirmation snapshot uses `sessionStorage` under `retailnext-last-order`.
+- Cart reducer behavior in `lib/cart.ts` is the source of truth for add/update/remove/clear actions. Quantity changes, subtotal calculation, and order snapshot generation should be implemented there rather than duplicated in components.
+- Recently viewed state is managed separately in `lib/recently-viewed.ts`. It stores product ids in `localStorage`, caps history at 8 items, and broadcasts updates with a window event so recommendation UI can refresh without a full reload.
+- Recommendation rails are presentation components over catalog data, not a separate service. Homepage rails are assembled from discovery tags in `lib/products.ts`, and product-page recently viewed suggestions are derived from `lib/recently-viewed.ts`.
+- Styling is primarily global and utility-driven through `app/globals.css`; shared storefront components should preserve existing layout, spacing, and merchandising patterns rather than introducing isolated styling systems.
+
 ## Notes
 
 - Product images are loaded from `public/products/`
