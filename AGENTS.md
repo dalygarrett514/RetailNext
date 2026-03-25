@@ -26,6 +26,17 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture
+
+- The app uses the Next.js App Router, with route files in `app/` composing reusable storefront components from `components/`.
+- The homepage route in `app/page.tsx` switches between the editorial discovery experience and the catalog experience based on search params.
+- Product catalog data, search helpers, sorting, filtering, and merchandising metadata are centralized in `lib/products.ts`.
+- Shared domain types such as products, cart lines, checkout data, and order snapshots are defined in `lib/types.ts` and should stay in sync with catalog changes.
+- Cart state is owned by `providers/cart-provider.tsx`, which hydrates from local storage on the client and persists cart changes after hydration.
+- Cart calculations and reducer logic live in `lib/cart.ts`; prefer updating those helpers instead of duplicating cart business logic inside components.
+- Route-specific experiences are split across dedicated routes for search, product detail, checkout, account login, and order confirmation under `app/`.
+- Styling is primarily controlled through `app/globals.css`, with components expected to follow the existing storefront visual language instead of introducing a new pattern per page.
+
 ## Notes
 
 - Product images are loaded from `public/products/`
