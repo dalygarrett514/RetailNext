@@ -56,6 +56,35 @@ test("shopper can search, adjust cart quantity, and complete checkout", async ({
   await expect(page.getByRole("main").getByText("Subtotal")).toBeVisible();
 });
 
+test("shopper sees cart contents persist after reloading the storefront", async ({
+  page,
+}) => {
+  await page.goto("/products/essential-tee");
+
+  await page.getByRole("button", { name: "Add to cart" }).click();
+  const cartDrawer = page.getByRole("complementary", { name: "Cart drawer" });
+  await expect(cartDrawer).toBeVisible();
+  await expect(cartDrawer).toContainText("Essential Tee");
+
+  await page
+    .getByRole("button", { name: "Increase quantity of Essential Tee" })
+    .click();
+  await expect(cartDrawer).toContainText("$116.00");
+
+  await page.reload();
+
+  await expect(
+    page.getByRole("navigation", { name: "Breadcrumb" }),
+  ).toContainText("Essential Tee");
+
+  await page.getByRole("button", { name: "Open cart" }).click();
+  await expect(cartDrawer).toBeVisible();
+  await expect(cartDrawer).toContainText("1 item");
+  await expect(cartDrawer).toContainText("Essential Tee");
+  await expect(cartDrawer.locator("span.min-w-6").first()).toHaveText("2");
+  await expect(cartDrawer).toContainText("$116.00");
+});
+
 test("shopper can recover from an empty cart by browsing the full catalog", async ({
   page,
 }) => {
