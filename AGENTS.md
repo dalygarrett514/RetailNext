@@ -26,6 +26,19 @@ The app is intended to feel like a polished online shop experience with:
 - `providers/`: React context providers
 - `public/`: static assets such as product images and the logo
 
+## Architecture
+
+- App Router entry points live in `app/`, with `app/layout.tsx` wrapping every route in `CartProvider` and rendering the shared header, footer, and cart drawer shell.
+- The home route in `app/page.tsx` switches between the editorial homepage and catalog mode based on search params, so homepage and catalog changes often meet there first.
+- Search is routed through `app/search/page.tsx`, while the interactive search experience, facets, and zero-results recovery live in `components/search-results-experience.tsx`.
+- Product records are defined in `lib/products.ts`; category links, merchandising filters, sort options, badge labels, and recommendation/search helpers are all derived from that same module.
+- Shared domain types live in `lib/types.ts`. Extend those types before adding new product attributes or cart/order fields so helpers and UI stay aligned.
+- Cart state is centralized in `providers/cart-provider.tsx`, with reducer logic, subtotal math, checkout snapshot building, and browser storage helpers in `lib/cart.ts`.
+- Cart and recently viewed data persist in browser storage. Cart lines are saved in `localStorage`, the last order snapshot is saved in `sessionStorage`, and recently viewed products are managed in `lib/recently-viewed.ts`.
+- Product detail is a client component in `components/product-detail.tsx`; it records recently viewed products, reads recommendation helpers from `lib/products.ts`, and sends add-to-cart actions through the cart provider.
+- Checkout is routed through `app/checkout/page.tsx` and primarily implemented in `components/checkout-form.tsx`. The order confirmation page reads the saved mock order snapshot from storage in `app/order/success/page.tsx`.
+- Styling is mostly centralized in `app/globals.css`, with components relying on the shared design tokens and utility classes defined there. Prefer extending those patterns over introducing one-off visual systems.
+
 ## Notes
 
 - Product images are loaded from `public/products/`

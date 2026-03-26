@@ -75,6 +75,41 @@ test("shopper can recover from an empty cart by browsing the full catalog", asyn
   await expect(page.getByTestId("product-card").first()).toBeVisible();
 });
 
+test("shopper cart persists after a page reload", async ({ page }) => {
+  await page.goto("/products/essential-tee");
+
+  await expect(
+    page.getByRole("heading", { name: "Essential Tee" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Add to cart" }).click();
+
+  const cartDrawer = page.getByRole("complementary", { name: "Cart drawer" });
+  await expect(cartDrawer).toBeVisible();
+  await expect(cartDrawer.getByText("Essential Tee")).toBeVisible();
+  await expect(cartDrawer.getByText("$58.00").first()).toBeVisible();
+
+  await cartDrawer.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(cartDrawer).not.toBeVisible();
+
+  await page.reload();
+
+  await expect(
+    page.getByRole("heading", { name: "Essential Tee" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Open cart" }).click();
+  await expect(cartDrawer).toBeVisible();
+  await expect(cartDrawer.getByText("Essential Tee")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Decrease quantity of Essential Tee" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Increase quantity of Essential Tee" }),
+  ).toBeVisible();
+  await expect(cartDrawer.getByText("$58.00").first()).toBeVisible();
+});
+
 test("shopper can recover from a zero-result search", async ({ page }) => {
   await page.goto("/search?q=zzzx");
 
