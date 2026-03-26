@@ -35,6 +35,17 @@ The app is intended to feel like a polished online shop experience with:
 - Search results are available at `/search?q=...`
 - Styling is primarily controlled through `app/globals.css`
 
+## Working Rules
+
+- Product data lives in `lib/products.ts`; keep catalog, discovery, and search behavior aligned with that source of truth.
+- Cart behavior is client-side and managed through `providers/cart-provider.tsx` and helpers in `lib/cart.ts`.
+- Prefer updating shared logic in `lib/` instead of reimplementing filtering, sorting, formatting, or search behavior inside components.
+- Use server components by default and add `"use client"` only when state, effects, event handlers, or browser APIs are required.
+- Preserve URL-driven state and entry points that already exist, including `/?view=catalog` and `/search?q=...`.
+- Keep styling consistent with the existing polished, editorial storefront experience and avoid introducing generic UI patterns.
+- When behavior changes, update the closest unit tests in `components/` or `lib/`; run `npm run test` for behavior changes and `npm run test:e2e` for route-level flows such as search, cart, checkout, or login.
+- When adding new routes, flows, assets, or important implementation conventions, update both `README.md` and `AGENTS.md`.
+
 ## Commands
 
 - `npm run dev`: start the local dev server
